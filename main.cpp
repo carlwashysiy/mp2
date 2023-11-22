@@ -7,7 +7,7 @@ using namespace std;
 
 void ClassRegistrationSystem()
 {
-    bool MainResetButton=false; //if it remains false, program exits
+    bool MainResetButton=false; //if it remains false, 
     int chosenpath; //create new class or edit class
     do
     {
