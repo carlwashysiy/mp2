@@ -6,22 +6,12 @@
 
 using namespace std;
 
-//assigning global variables
-
-const int maxNumOfClasses=20;
-const int maxNumOfStudents=100;
-const int StudentSubjectSectionDayslotTimeslot=5;
-string classNames[maxNumOfClasses]; //array for names of each class
-string classNameTXT[maxNumOfClasses]; //array for txt file names of each class
-//array for checking if student is enlisted in class with different section or if conflicting schedule
-string studentClassList[StudentSubjectSectionDayslotTimeslot][maxNumOfStudents]; 
-int enlistedClasses=0;
-
 //declaring functions so that the classes can use them
-void incompleteDetails(bool&resetbutton);
+void incompleteDetails(bool&resetbutton,string classNameTXT[20],int&enlistedClasses);
 void inputval(string&yn);
-void displayClass();
-void fileScan(bool&MainResetButton);
+void displayClass(string classNameTXT[20],int&enlistedClasses);
+void fileScan(bool&MainResetButton,string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
+int maxNumOfClasses,int&enlistedClasses);
 
 class ClassContents //parent class 
 {
@@ -42,7 +32,8 @@ class ClassContents //parent class
         }
 
         //creating new class file with initial details
-        void createNewClassFile()
+        void createNewClassFile(string(&classNames)[20],string(&classNameTXT)[20],
+        const int maxNumOfClasses,int&enlistedClasses)
         {
             enlistedClasses=0;
             for (int i=0; i<maxNumOfClasses; i++)
@@ -87,7 +78,7 @@ class Teacher:public ClassContents //child class for teacher
         }
 
         //appending teacher to class file
-        void appendteacher(bool subjectNotListed,bool teacherRegistered)
+        void appendteacher(bool subjectNotListed,bool teacherRegistered,string(&classNameTXT)[20],int&enlistedClasses)
         {
             //teacher is registered
             if (!subjectNotListed&&teacherRegistered)
@@ -118,11 +109,13 @@ class Student:public ClassContents //child class for students
         }
 
         //appending students to class file
-        void appendstudent(bool&resetbutton,bool&enlistagain,bool studentRegistered,bool studentEnlistedAlready,bool conflictingSchedule,
-        string Subject,string Section)
+        void appendstudent(bool&resetbutton,bool&enlistagain,bool studentRegistered,bool studentEnlistedAlready,
+        bool conflictingSchedule,string Subject,string Section,string(&classNames)[20],string(&classNameTXT)[20],
+        string(&studentClassList)[5][100],const int maxNumOfClasses,int&enlistedClasses)
         {
             bool placeholder;
-            fileScan(placeholder); //updating arrays
+            //updating arrays
+            fileScan(placeholder,classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses); 
             int linecount=0;
             int studentcount=0;
             //checking if there are students inside the class file already
@@ -141,7 +134,8 @@ class Student:public ClassContents //child class for students
     
             if (studentRegistered&&!studentEnlistedAlready&&!conflictingSchedule)
             {
-                fstream appendstudent(classNameTXT[enlistedClasses], ios::app); //appending student to class
+                //appending student to class
+                fstream appendstudent(classNameTXT[enlistedClasses], ios::app); 
                 appendstudent.close();
                 appendstudent.open(classNameTXT[enlistedClasses], ios::app);
                 if (appendstudent.is_open())
@@ -174,6 +168,8 @@ class Student:public ClassContents //child class for students
                     appendingStudent <<timeslot<<endl;
                     appendingStudent.close();
                 }
+                //updating arrays after appending
+                fileScan(placeholder,classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses); 
             }
 
             cout <<"\nWould you like to enlist another student to the class? Y/N: ";
@@ -187,11 +183,12 @@ class Student:public ClassContents //child class for students
                 if (studentcount==0) 
                 {
                     cout <<"\nClass details INCOMPLETE. Deleting file..."<<endl<<""<<endl;
-                    incompleteDetails(resetbutton); //delete file
+                    incompleteDetails(resetbutton,classNameTXT,enlistedClasses); //delete file
                     return;
                 }
                 //atleast 1 enlisted student
-                fstream appendClassList("Class List.txt",ios::app); //checking number of enlisted classes in class list
+                fstream appendClassList("Class List.txt",ios::app); 
+                //checking number of enlisted classes in class list
                 enlistedClasses=0;
                 for (int i=0; i<maxNumOfClasses; i++)
                 {
@@ -208,7 +205,7 @@ class Student:public ClassContents //child class for students
                     appendClassList.close();
                 }
                 cout <<"\nClass has successfully been enlisted!"<<endl;
-                displayClass();
+                displayClass(classNameTXT,enlistedClasses);
                 resetbutton=true;
                 return; //back to main menu after appending class to class list
             }
@@ -221,7 +218,9 @@ class Student:public ClassContents //child class for students
 };
 
 //updating arrays by assigning each line of the file to an element
-void fileScan(bool&MainResetButton) 
+void fileScan(bool&MainResetButton,
+string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
+int maxNumOfClasses,int&enlistedClasses) 
 {
     fstream readingClassList("Class List.txt",ios::in);
     if (readingClassList.is_open())
@@ -323,12 +322,8 @@ void inputvalpath(int&path) //makes sure user only inputs 1 2 or 3
     }
 }
 
-const int numberofsubjects=10;
-string subjects[numberofsubjects]={"Programming", "Drafting", "Data Analysis",
-                                   "Circuits 1", "OOP", "Circuits 2", 
-                                   "Electronics 1","Electronics 2", 
-                                   "Logic Circuits", "Microprocessors"};
-void displaySubjects() ///displays subjects to be chosen
+//displays subjects to be chosen
+void displaySubjects(string subjects[10],const int numberofsubjects) 
 {
     cout <<"----------------------------------------------------------------"<<endl;
     cout<<"Here is the list of available subjects: "<<endl<<""<<endl;
@@ -339,7 +334,8 @@ void displaySubjects() ///displays subjects to be chosen
     return;
 }
 
-void ChooseSubject(int&chosenSubject,string&Subject) //prompts user to choose a subject
+//prompts user to choose a subject
+void ChooseSubject(int&chosenSubject,string&Subject,string subjects[10]) 
 {
     string yn;
     do 
@@ -365,9 +361,8 @@ void ChooseSubject(int&chosenSubject,string&Subject) //prompts user to choose a 
    return;
 }
 
-const int numberofsections=2;
-string sections[numberofsections]={"A","B"};
-void displaySections(int chosenSubject) //displays sections to be chosen
+//displays sections to be chosen
+void displaySections(int chosenSubject,string subjects[10],string sections[2],const int numberofsections)
 {
     cout <<"----------------------------------------------------------------"<<endl;
     cout <<"Here's the list of sections for your "<<subjects[chosenSubject-1]<<" class: "<<endl<<""<<endl;
@@ -378,7 +373,8 @@ void displaySections(int chosenSubject) //displays sections to be chosen
     return;
 }
 
-void ChooseSection(bool&resetbutton,int&chosenSection,string&Section,string Subject) //prompts user to choose a section
+//prompts user to choose a section
+void ChooseSection(bool&resetbutton,int&chosenSection,string&Section,string Subject,string sections[2]) 
 {
     string yn;
     do 
@@ -429,9 +425,8 @@ void ChooseSection(bool&resetbutton,int&chosenSection,string&Section,string Subj
 }
 
 
-const int numberofdays=8;
-string dayslots[numberofdays]={"MTh", "TF", "M", "T", "W", "Th", "F", "S"};
-void displayDays(int chosenSubject) //displays days to be chosen
+//displays days to be chosen
+void displayDays(int chosenSubject,string subjects[10],string dayslots[8],const int numberofdays) 
 {
     cout <<"----------------------------------------------------------------"<<endl;
     cout <<"Here's the list of day slots for your "<<subjects[chosenSubject-1]<<" class: "<<endl<<""<<endl;
@@ -442,7 +437,8 @@ void displayDays(int chosenSubject) //displays days to be chosen
     return;
 }
 
-void ChooseDay(int&chosenDaySlot,string&DaySlot)//prompts user to choose day slot
+//prompts user to choose day slot
+void ChooseDay(int&chosenDaySlot,string&DaySlot,string dayslots[2])
 {
     string yn;
     do 
@@ -467,13 +463,8 @@ void ChooseDay(int&chosenDaySlot,string&DaySlot)//prompts user to choose day slo
     return;
 }
 
-string timeslots[2][6]= //2D array for time slots
-{
-    {"8:00-9:30", "9:30-11:00","11:00-12:30","12:30-2:00", "2:00-3:30", "3:30-5:00"}, //1 and a half hour time slots
-    {"8:00-11:00","11:00-2:00", "2:00-5:00"} //3 hour time slots
-};
-
-void displayTimeSlots(int chosenDaySlot, int chosenSubject) //if user chose 1 day per week
+//if user chose 1 day per week
+void displayTimeSlots(int chosenDaySlot, int chosenSubject,string subjects[10],string timeslots[2][6]) 
 {
     cout <<"----------------------------------------------------------------"<<endl;
     cout <<"Here's the list of time slots for your "<<subjects[chosenSubject-1]<<" class: "<<endl<<""<<endl;
@@ -495,7 +486,8 @@ void displayTimeSlots(int chosenDaySlot, int chosenSubject) //if user chose 1 da
     }
 }
 
-void ChooseTime(int&chosenTimeSlot,int chosenDaySlot,string&TimeSlot) //if user chose 1 day per week
+//prompt user to choose time slot
+void ChooseTime(int&chosenTimeSlot,int chosenDaySlot,string&TimeSlot,string timeslots[2][6]) 
 {
     string yn;
     int onceAweek=1;
@@ -540,7 +532,7 @@ void ChooseTime(int&chosenTimeSlot,int chosenDaySlot,string&TimeSlot) //if user 
     return;
 }
 
-void displayClass() //prints out contents of a class file
+void displayClass(string classNameTXT[20],int&enlistedClasses) //prints out contents of a class file
 {
     cout <<"\nHere are the details of the class: "<<endl;
     cout <<"----------------------------------------------------------------"<<endl;
@@ -558,7 +550,8 @@ void displayClass() //prints out contents of a class file
     return;
 }
 
-void incompleteDetails(bool&resetbutton) //if no teacher or no student enlisted
+//if no teacher or no student enlisted
+void incompleteDetails(bool&resetbutton,string classNameTXT[20],int&enlistedClasses) 
 {
     remove(classNameTXT[enlistedClasses].c_str()); //deletes file from directory
     fstream deleteFile("Class Files List.txt",ios::in); //removes file name from Class Files List.txt
@@ -685,10 +678,12 @@ string Subject,string&teacherFullNameA) //prompts user to assign teacher
     }  
 }
 
+//prompts user to enlist student
 void enlistStudent(bool&resetbutton, bool&studentRegistered,bool&studentEnlistedAlready,bool&conflictingSchedule,
-string Subject, string DaySlot, string TimeSlot,string&studentDetails) //prompts user to enlist student
+string Subject, string DaySlot, string TimeSlot,string&studentDetails,const int maxNumOfStudents,
+string(&studentClassList)[5][100]) 
 {
-    string yn,studentName,studentNumber;
+    string yn,studentLastName,studentGivenName,studentMiddleInitial,studentFullName,studentNumber;
     do 
     {
         cout <<"\nPlease enter the student number."<<endl;
@@ -704,16 +699,22 @@ string Subject, string DaySlot, string TimeSlot,string&studentDetails) //prompts
     do 
     {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout <<"\nPlease enter the student's name: ";
-        getline(cin,studentName);
-        cout <<"The student's name is: "<<studentName<<endl;
+        cout <<"\nPlease enter the student's name: "<<endl;
+        cout <<"Last name: ";
+        getline(cin,studentLastName);
+        cout <<"Given name: ";
+        getline(cin,studentGivenName);
+        cout <<"Middle Initial: ";
+        getline(cin,studentMiddleInitial);
+        studentFullName=studentLastName+", "+studentGivenName+" "+studentMiddleInitial;
+        cout <<"The student's name is: "<<studentFullName<<endl;
         cout <<"Is this correct? Y/N: ";
         cin >>yn;
         inputval(yn);
     }while (yn=="n"||yn=="N");
     
     //checking if student is registered in Student List.txt
-    studentDetails="23-"+studentNumber+" "+studentName;
+    studentDetails="23-"+studentNumber+" "+studentFullName;
     fstream checkStudentList ("Student List.txt",ios::in);
     studentRegistered=false;
     if (checkStudentList.is_open())
@@ -760,8 +761,9 @@ string Subject, string DaySlot, string TimeSlot,string&studentDetails) //prompts
     }
 }
 
-
-void ChooseClassView(int&chosenClassView) //prompts user to choose which class to view
+//prompts user to choose which class to view
+void ChooseClassView(int&chosenClassView,string classNames[20],string classNameTXT[20],
+const int maxNumOfClasses,int&enlistedClasses) 
 {
     enlistedClasses=0;
     for (int i=0; i<maxNumOfClasses; i++)
@@ -808,7 +810,9 @@ void ChooseClassView(int&chosenClassView) //prompts user to choose which class t
     return;
 }
 
-void updateTextFiles() //updates Class Files List.txt, Class List.txt, and Student-Class List.txt
+//updates Class Files List.txt, Class List.txt, and Student-Class List.txt
+void updateTextFiles(string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
+const int maxNumOfStudents,int&enlistedClasses) 
 {
     ofstream checkClassList("Class List.txt");
     ofstream classFilesList("Class Files List.txt");
@@ -844,7 +848,10 @@ void updateTextFiles() //updates Class Files List.txt, Class List.txt, and Stude
     return;
 }
 
-void ChooseClassDelete(int&chosenClassDelete) //prompts user to choose a class to delete
+//prompts user to choose a class to delete
+void ChooseClassDelete(int&chosenClassDelete,
+string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
+const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses) 
 {
     enlistedClasses=0;
     for (int i=0; i<maxNumOfClasses; i++)
@@ -948,7 +955,8 @@ void ChooseClassDelete(int&chosenClassDelete) //prompts user to choose a class t
     classNameTXT[enlistedClasses-1]=""; //clears the last element
 
     enlistedClasses--;
-    updateTextFiles(); //update class list after updating arrays
+    updateTextFiles(classNames,classNameTXT,studentClassList,maxNumOfStudents,enlistedClasses); 
+    //update class list after updating arrays
 
     cout <<"Class successfully deleted!"<<endl;
     return;
@@ -958,35 +966,51 @@ void ChooseClassDelete(int&chosenClassDelete) //prompts user to choose a class t
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //PATH 1
-void creatingNewClass(bool&MainResetButton)
+void creatingNewClass(bool&MainResetButton,
+string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
+const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
 {
     //declaring important variables
     int chosenSubject, chosenDaySlot, chosenTimeSlot, chosenSection;
     string Subject, Section, DaySlot, TimeSlot,teacherFullNameA,studentDetails;
+    const int numberofsubjects=10;
+    string subjects[numberofsubjects]={"Programming", "Drafting", "Data Analysis",
+                                   "Circuits 1", "OOP", "Circuits 2", 
+                                   "Electronics 1","Electronics 2", 
+                                   "Logic Circuits", "Microprocessors"};
+    const int numberofsections=2;
+    string sections[numberofsections]={"A","B"};
+    const int numberofdays=8;
+    string dayslots[numberofdays]={"MTh", "TF", "M", "T", "W", "Th", "F", "S"};
+    string timeslots[2][6]= //2D array for time slots
+    {
+        {"8:00-9:30", "9:30-11:00","11:00-12:30","12:30-2:00", "2:00-3:30", "3:30-5:00"},//1 and a half hour time slots
+        {"8:00-11:00","11:00-2:00", "2:00-5:00"} //3 hour time slots
+    };
     MainResetButton=false;
     //display and choose subject
-    displaySubjects();
-    ChooseSubject(chosenSubject,Subject);
+    displaySubjects(subjects,numberofsubjects);
+    ChooseSubject(chosenSubject,Subject,subjects);
 
     //display and choose section
-    displaySections(chosenSubject);
-    ChooseSection(MainResetButton,chosenSection,Section,Subject);
+    displaySections(chosenSubject,subjects,sections,numberofsections);
+    ChooseSection(MainResetButton,chosenSection,Section,Subject,sections);
     if (MainResetButton) //if class is aleady enlisted
     {
         return; //back to main menu
     }
     //display and choose day slot
-    displayDays(chosenSubject);
-    ChooseDay(chosenDaySlot,DaySlot);
+    displayDays(chosenSubject,subjects,dayslots,numberofdays);
+    ChooseDay(chosenDaySlot,DaySlot,dayslots);
 
     //display and choose time slot
-    displayTimeSlots(chosenDaySlot,chosenSubject);
-    ChooseTime(chosenTimeSlot,chosenDaySlot,TimeSlot);
+    displayTimeSlots(chosenDaySlot,chosenSubject,subjects,timeslots);
+    ChooseTime(chosenTimeSlot,chosenDaySlot,TimeSlot,timeslots);
     ClassContents newclass(Subject,Section,DaySlot,TimeSlot);
 
     //create new class file and display contents of file
-    newclass.createNewClassFile();
-    displayClass();
+    newclass.createNewClassFile(classNames,classNameTXT,maxNumOfClasses,enlistedClasses);
+    displayClass(classNameTXT,enlistedClasses);
 
     //adding teacher
     bool reset=false;
@@ -1000,19 +1024,20 @@ void creatingNewClass(bool&MainResetButton)
         if (yn=="n"||yn=="N") //no teacher assigned
         {
             cout <<"\nClass details INCOMPLETE. Deleting file..."<<endl<<""<<endl;
-            incompleteDetails(MainResetButton); //delete file
+            incompleteDetails(MainResetButton,classNameTXT,enlistedClasses); //delete file
             return;
         }
         else //assigning teacher
         {
             bool teacherRegistered,subjectNotListed;
-            assigningTeacher(reset,teacherRegistered,subjectNotListed,Subject,teacherFullNameA); //includes the process of checking if teacher is in database
+            assigningTeacher(reset,teacherRegistered,subjectNotListed,Subject,teacherFullNameA); 
+            //includes the process of checking if teacher is in database
             Teacher tchr(Subject,Section,DaySlot,TimeSlot);
             tchr.setTeacher(teacherFullNameA);
-            tchr.appendteacher(subjectNotListed,teacherRegistered);
+            tchr.appendteacher(subjectNotListed,teacherRegistered,classNameTXT,enlistedClasses);
         }
     }while(reset==true);
-    displayClass(); //display updated version of class with teacher included
+    displayClass(classNameTXT,enlistedClasses); //display updated version of class with teacher included
 
     //adding students
     cout <<"\nWould you like to enlist a student to the class? Y/N: ";
@@ -1023,7 +1048,7 @@ void creatingNewClass(bool&MainResetButton)
     if (yn=="n"||yn=="N")
     {
         cout <<"\nClass details INCOMPLETE. Deleting file..."<<endl<<""<<endl;
-        incompleteDetails(MainResetButton); //delete file
+        incompleteDetails(MainResetButton,classNameTXT,enlistedClasses); //delete file
         return;
     }
 
@@ -1033,10 +1058,13 @@ void creatingNewClass(bool&MainResetButton)
     {
         enlistagain=false;
         bool resetbutton=false;
-        enlistStudent(resetbutton,studentRegistered,studentEnlistedAlready,conflictingSchedule,Subject,DaySlot,TimeSlot,studentDetails); //includes process of checking if student is in database 
+        //includes process of checking if student is in database 
+        enlistStudent(resetbutton,studentRegistered,studentEnlistedAlready,conflictingSchedule,
+        Subject,DaySlot,TimeSlot,studentDetails,maxNumOfStudents,studentClassList); 
         Student stdnt(Subject,Section,DaySlot,TimeSlot);
         stdnt.setStudent(studentDetails);
-        stdnt.appendstudent(resetbutton,enlistagain,studentRegistered,studentEnlistedAlready,conflictingSchedule,Subject,Section);
+        stdnt.appendstudent(resetbutton,enlistagain,studentRegistered,studentEnlistedAlready,conflictingSchedule,
+        Subject,Section,classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses);
         if (resetbutton==true) //if user is done enlisting students
         {
             MainResetButton=true;
@@ -1050,10 +1078,13 @@ void creatingNewClass(bool&MainResetButton)
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 //PATH 2
-void viewDeleteClasses(bool&MainResetButton)
+void viewDeleteClasses(bool&MainResetButton,
+string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
+const int maxNumofClasses,const int maxNumOfStudents,int&enlistedClasses)
 {
-    //assigning important variables
+    //declaring important variables
     int chosenClassView, chosenClassDelete;
+    
     //if no classes are found in the class list after calling fileScan()
     if (MainResetButton==true)
     {
@@ -1085,7 +1116,8 @@ void viewDeleteClasses(bool&MainResetButton)
             } 
             displayClassList.close();
         }
-        ChooseClassView(chosenClassView); //prompts user to choose class to view
+        //prompt user to choose class to view
+        ChooseClassView(chosenClassView,classNames,classNameTXT,maxNumofClasses,enlistedClasses); 
         MainResetButton=true; //back to main menu after displaying class details
         return;
     }
@@ -1106,7 +1138,9 @@ void viewDeleteClasses(bool&MainResetButton)
             } 
             displayClassList.close();
         }
-        ChooseClassDelete(chosenClassDelete); //prompts user to choose class to delete
+        //prompt user to choose class to delete
+        ChooseClassDelete(chosenClassDelete,classNames,classNameTXT,studentClassList,
+        maxNumofClasses,maxNumOfStudents,enlistedClasses); 
         MainResetButton=true; //back to main menu after deleting class
         return;
     }
@@ -1119,6 +1153,14 @@ void viewDeleteClasses(bool&MainResetButton)
 
 void ClassRegistrationSystem()
 {
+    const int maxNumOfClasses=20;
+    const int maxNumOfStudents=100;
+    const int StudentSubjectSectionDayslotTimeslot=5;
+    string classNames[maxNumOfClasses];//array for names of each class
+    string classNameTXT[maxNumOfClasses];//array for txt file names of each class
+    //array for checking if student is enlisted in class with different section or if conflicting schedule
+    string studentClassList[StudentSubjectSectionDayslotTimeslot][maxNumOfStudents];
+    int enlistedClasses=0;
     bool MainResetButton=false; //if it remains false, 
     int chosenpath; //create new class or edit class
     do
@@ -1137,13 +1179,19 @@ void ClassRegistrationSystem()
         if (chosenpath==1)//user wants to create a new class
         {
             bool placeholder; //placeholder just to pass in function
-            fileScan(placeholder); //updates arrays
-            creatingNewClass(MainResetButton); //MainResetButton always returns true for path 1, loops function
+            //update arrays
+            fileScan(placeholder,classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses); 
+            creatingNewClass(MainResetButton,classNames,classNameTXT,studentClassList,
+            maxNumOfClasses,maxNumOfStudents,enlistedClasses);
+            //MainResetButton always returns true for path 1, loops function
         }
         else if(chosenpath==2)//user wants to view classes
         {
-            fileScan(MainResetButton); //updates arrays
-            viewDeleteClasses(MainResetButton); //MainResetButton always returns true for path 2, loops function
+            //update arrays
+            fileScan(MainResetButton,classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses); 
+            viewDeleteClasses(MainResetButton,classNames,classNameTXT,studentClassList,
+            maxNumOfClasses,maxNumOfStudents,enlistedClasses); 
+            //MainResetButton always returns true for path 2, loops function
         }
         else //exit the program if user inputs 3
         {
