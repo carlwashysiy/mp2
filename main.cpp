@@ -5,8 +5,6 @@
 #include "siy_header.h"
 using namespace std;
 
-
-//yo
 int main()
 {
     ClassRegistrationSystem(); 

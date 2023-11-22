@@ -7,11 +7,7 @@
 using namespace std;
 
 //assigning global variables
-int chosenSubject, chosenDaySlot, chosenTimeSlot, chosenSection, 
-chosenClassView, chosenClassDelete;
-string Subject, Section, DaySlot, TimeSlot, DeleteClass,
-teacherLastName,teacherGivenName,teacherMiddleInitial,teacherFullNameA,teacherFullNameB,teacherLastGivenName,
-studentName, employeeNumber, studentNumber, teacherDetails, studentDetails;
+
 const int maxNumOfClasses=20;
 const int maxNumOfStudents=100;
 const int StudentSubjectSectionDayslotTimeslot=5;
@@ -122,7 +118,8 @@ class Student:public ClassContents //child class for students
         }
 
         //appending students to class file
-        void appendstudent(bool&resetbutton,bool&enlistagain,bool studentRegistered,bool studentEnlistedAlready,bool conflictingSchedule)
+        void appendstudent(bool&resetbutton,bool&enlistagain,bool studentRegistered,bool studentEnlistedAlready,bool conflictingSchedule,
+        string Subject,string Section)
         {
             bool placeholder;
             fileScan(placeholder); //updating arrays
@@ -342,7 +339,7 @@ void displaySubjects() ///displays subjects to be chosen
     return;
 }
 
-void ChooseSubject() //prompts user to choose a subject
+void ChooseSubject(int&chosenSubject,string&Subject) //prompts user to choose a subject
 {
     string yn;
     do 
@@ -370,7 +367,7 @@ void ChooseSubject() //prompts user to choose a subject
 
 const int numberofsections=2;
 string sections[numberofsections]={"A","B"};
-void displaySections() //displays sections to be chosen
+void displaySections(int chosenSubject) //displays sections to be chosen
 {
     cout <<"----------------------------------------------------------------"<<endl;
     cout <<"Here's the list of sections for your "<<subjects[chosenSubject-1]<<" class: "<<endl<<""<<endl;
@@ -381,7 +378,7 @@ void displaySections() //displays sections to be chosen
     return;
 }
 
-void ChooseSection(bool&resetbutton) //prompts user to choose a section
+void ChooseSection(bool&resetbutton,int&chosenSection,string&Section,string Subject) //prompts user to choose a section
 {
     string yn;
     do 
@@ -434,7 +431,7 @@ void ChooseSection(bool&resetbutton) //prompts user to choose a section
 
 const int numberofdays=8;
 string dayslots[numberofdays]={"MTh", "TF", "M", "T", "W", "Th", "F", "S"};
-void displayDays() //displays days to be chosen
+void displayDays(int chosenSubject) //displays days to be chosen
 {
     cout <<"----------------------------------------------------------------"<<endl;
     cout <<"Here's the list of day slots for your "<<subjects[chosenSubject-1]<<" class: "<<endl<<""<<endl;
@@ -445,7 +442,7 @@ void displayDays() //displays days to be chosen
     return;
 }
 
-void ChooseDay()//prompts user to choose day slot
+void ChooseDay(int&chosenDaySlot,string&DaySlot)//prompts user to choose day slot
 {
     string yn;
     do 
@@ -476,7 +473,7 @@ string timeslots[2][6]= //2D array for time slots
     {"8:00-11:00","11:00-2:00", "2:00-5:00"} //3 hour time slots
 };
 
-void displayTimeSlots() //if user chose 1 day per week
+void displayTimeSlots(int chosenDaySlot, int chosenSubject) //if user chose 1 day per week
 {
     cout <<"----------------------------------------------------------------"<<endl;
     cout <<"Here's the list of time slots for your "<<subjects[chosenSubject-1]<<" class: "<<endl<<""<<endl;
@@ -498,7 +495,7 @@ void displayTimeSlots() //if user chose 1 day per week
     }
 }
 
-void ChooseTime() //if user chose 1 day per week
+void ChooseTime(int&chosenTimeSlot,int chosenDaySlot,string&TimeSlot) //if user chose 1 day per week
 {
     string yn;
     int onceAweek=1;
@@ -599,9 +596,11 @@ void incompleteDetails(bool&resetbutton) //if no teacher or no student enlisted
     return; //back to main menu after deleting class file
 }
 
-void assigningTeacher(bool&resetbutton,bool&teacherRegistered,bool&subjectNotListed) //prompts user to assign teacher
+void assigningTeacher(bool&resetbutton,bool&teacherRegistered,bool&subjectNotListed,
+string Subject,string&teacherFullNameA) //prompts user to assign teacher
 {
-    string yn;
+    string yn,teacherLastName,teacherGivenName,teacherMiddleInitial,teacherFullNameB,teacherLastGivenName,
+    employeeNumber,teacherDetails;
     do 
     {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -686,9 +685,10 @@ void assigningTeacher(bool&resetbutton,bool&teacherRegistered,bool&subjectNotLis
     }  
 }
 
-void enlistStudent(bool&resetbutton, bool&studentRegistered,bool&studentEnlistedAlready,bool&conflictingSchedule) //prompts user to enlist student
+void enlistStudent(bool&resetbutton, bool&studentRegistered,bool&studentEnlistedAlready,bool&conflictingSchedule,
+string Subject, string DaySlot, string TimeSlot,string&studentDetails) //prompts user to enlist student
 {
-    string yn;
+    string yn,studentName,studentNumber;
     do 
     {
         cout <<"\nPlease enter the student number."<<endl;
@@ -761,7 +761,7 @@ void enlistStudent(bool&resetbutton, bool&studentRegistered,bool&studentEnlisted
 }
 
 
-void ChooseClassView() //prompts user to choose which class to view
+void ChooseClassView(int&chosenClassView) //prompts user to choose which class to view
 {
     enlistedClasses=0;
     for (int i=0; i<maxNumOfClasses; i++)
@@ -844,7 +844,7 @@ void updateTextFiles() //updates Class Files List.txt, Class List.txt, and Stude
     return;
 }
 
-void ChooseClassDelete() //prompts user to choose a class to delete
+void ChooseClassDelete(int&chosenClassDelete) //prompts user to choose a class to delete
 {
     enlistedClasses=0;
     for (int i=0; i<maxNumOfClasses; i++)
@@ -878,7 +878,7 @@ void ChooseClassDelete() //prompts user to choose a class to delete
     cout <<"\nDeleting file..."<<endl;
 
     //updating studentClassList array
-    DeleteClass=classNames[chosenClassDelete-1];
+    string DeleteClass=classNames[chosenClassDelete-1];
     istringstream iss(DeleteClass);
     string deleteSubject,deleteSubjectA,deleteSubjectB,deleteSection;
     int wordCount=0;
@@ -960,25 +960,28 @@ void ChooseClassDelete() //prompts user to choose a class to delete
 //PATH 1
 void creatingNewClass(bool&MainResetButton)
 {
+    //declaring important variables
+    int chosenSubject, chosenDaySlot, chosenTimeSlot, chosenSection;
+    string Subject, Section, DaySlot, TimeSlot,teacherFullNameA,studentDetails;
     MainResetButton=false;
     //display and choose subject
     displaySubjects();
-    ChooseSubject();
+    ChooseSubject(chosenSubject,Subject);
 
     //display and choose section
-    displaySections();
-    ChooseSection(MainResetButton);
+    displaySections(chosenSubject);
+    ChooseSection(MainResetButton,chosenSection,Section,Subject);
     if (MainResetButton) //if class is aleady enlisted
     {
         return; //back to main menu
     }
     //display and choose day slot
-    displayDays();
-    ChooseDay();
+    displayDays(chosenSubject);
+    ChooseDay(chosenDaySlot,DaySlot);
 
     //display and choose time slot
-    displayTimeSlots();
-    ChooseTime();
+    displayTimeSlots(chosenDaySlot,chosenSubject);
+    ChooseTime(chosenTimeSlot,chosenDaySlot,TimeSlot);
     ClassContents newclass(Subject,Section,DaySlot,TimeSlot);
 
     //create new class file and display contents of file
@@ -1003,7 +1006,7 @@ void creatingNewClass(bool&MainResetButton)
         else //assigning teacher
         {
             bool teacherRegistered,subjectNotListed;
-            assigningTeacher(reset,teacherRegistered,subjectNotListed); //includes the process of checking if teacher is in database
+            assigningTeacher(reset,teacherRegistered,subjectNotListed,Subject,teacherFullNameA); //includes the process of checking if teacher is in database
             Teacher tchr(Subject,Section,DaySlot,TimeSlot);
             tchr.setTeacher(teacherFullNameA);
             tchr.appendteacher(subjectNotListed,teacherRegistered);
@@ -1030,10 +1033,10 @@ void creatingNewClass(bool&MainResetButton)
     {
         enlistagain=false;
         bool resetbutton=false;
-        enlistStudent(resetbutton,studentRegistered,studentEnlistedAlready,conflictingSchedule); //includes process of checking if student is in database 
+        enlistStudent(resetbutton,studentRegistered,studentEnlistedAlready,conflictingSchedule,Subject,DaySlot,TimeSlot,studentDetails); //includes process of checking if student is in database 
         Student stdnt(Subject,Section,DaySlot,TimeSlot);
         stdnt.setStudent(studentDetails);
-        stdnt.appendstudent(resetbutton,enlistagain,studentRegistered,studentEnlistedAlready,conflictingSchedule);
+        stdnt.appendstudent(resetbutton,enlistagain,studentRegistered,studentEnlistedAlready,conflictingSchedule,Subject,Section);
         if (resetbutton==true) //if user is done enlisting students
         {
             MainResetButton=true;
@@ -1049,6 +1052,9 @@ void creatingNewClass(bool&MainResetButton)
 //PATH 2
 void viewDeleteClasses(bool&MainResetButton)
 {
+    //assigning important variables
+    int chosenClassView, chosenClassDelete;
+    //if no classes are found in the class list after calling fileScan()
     if (MainResetButton==true)
     {
         cout <<"\nNo classes enlisted yet!"<<endl;
@@ -1079,7 +1085,7 @@ void viewDeleteClasses(bool&MainResetButton)
             } 
             displayClassList.close();
         }
-        ChooseClassView(); //prompts user to choose class to view
+        ChooseClassView(chosenClassView); //prompts user to choose class to view
         MainResetButton=true; //back to main menu after displaying class details
         return;
     }
@@ -1100,7 +1106,7 @@ void viewDeleteClasses(bool&MainResetButton)
             } 
             displayClassList.close();
         }
-        ChooseClassDelete(); //prompts user to choose class to delete
+        ChooseClassDelete(chosenClassDelete); //prompts user to choose class to delete
         MainResetButton=true; //back to main menu after deleting class
         return;
     }
