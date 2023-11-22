@@ -672,7 +672,7 @@ string Subject,string&teacherFullNameA) //prompts user to assign teacher
     //teacher is not registered
     else
     {
-        cout <<"\nTeacher is not registered in database!"<<endl;
+        cout <<"\nTeacher not found in database! Please check your spelling or make sure that the teacher is registered."<<endl;
         resetbutton=true;
         return;
     }  
@@ -717,6 +717,8 @@ string(&studentClassList)[5][100])
     studentDetails="23-"+studentNumber+" "+studentFullName;
     fstream checkStudentList ("Student List.txt",ios::in);
     studentRegistered=false;
+    studentEnlistedAlready=false;
+    conflictingSchedule=false;
     if (checkStudentList.is_open())
     {
         string line;
@@ -732,6 +734,7 @@ string(&studentClassList)[5][100])
 
     if (studentRegistered==true)
     {
+        cout <<"Student found in database."<<endl;
         //checking array if student is enlisted in subject with same or different section
         for (int i=0; i<maxNumOfStudents; i++)
         {
@@ -744,6 +747,7 @@ string(&studentClassList)[5][100])
         }
         if (!studentEnlistedAlready)
         {
+            //checking for conflicting schedule
             for (int i=0; i<maxNumOfStudents; i++)
             {
                 if (studentClassList[0][i]==studentDetails&&studentClassList[3][i]==DaySlot&&studentClassList[4][i]==TimeSlot)
@@ -757,7 +761,7 @@ string(&studentClassList)[5][100])
     }
     if (studentRegistered==false)
     {
-        cout <<"\nStudent is not registered in database!"<<endl;
+        cout <<"\nStudent not found in database! Please check your spelling or make sure that the student is registered."<<endl;
     }
 }
 
