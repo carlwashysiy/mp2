@@ -7,9 +7,9 @@
 using namespace std;
 
 //declaring functions so that the classes can use them
-void incompleteDetails(bool&resetbutton,string classNameTXT[20],int&enlistedClasses);
+void incompleteDetails(bool&resetbutton,string classNameTXT[20],int enlistedClasses);
 void inputval(string&yn);
-void displayClass(string classNameTXT[20],int&enlistedClasses);
+void displayClass(string classNameTXT[20],int enlistedClasses);
 void fileScan(bool&MainResetButton,string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
 int maxNumOfClasses,int&enlistedClasses);
 
@@ -32,7 +32,7 @@ class ClassContents //parent class
         }
 
         //creating new class file with initial details
-        void createNewClassFile(string(&classNames)[20],string(&classNameTXT)[20],
+        void createNewClassFile(string classNames[20],string(&classNameTXT)[20],
         const int maxNumOfClasses,int&enlistedClasses)
         {
             enlistedClasses=0;
@@ -78,7 +78,7 @@ class Teacher:public ClassContents //child class for teacher
         }
 
         //appending teacher to class file
-        void appendteacher(bool subjectNotListed,bool teacherRegistered,string(&classNameTXT)[20],int&enlistedClasses)
+        void appendteacher(bool subjectNotListed,bool teacherRegistered,string classNameTXT[20],int enlistedClasses)
         {
             //teacher is registered
             if (!subjectNotListed&&teacherRegistered)
@@ -374,8 +374,9 @@ void displaySections(int chosenSubject,string subjects[10],string sections[2],co
 }
 
 //prompts user to choose a section
-void ChooseSection(bool&resetbutton,int&chosenSection,string&Section,string Subject,string sections[2]) 
+void ChooseSection(bool&resetbutton,string&Section,string Subject,string sections[2]) 
 {
+    int chosenSection;
     string yn;
     do 
     {
@@ -487,10 +488,11 @@ void displayTimeSlots(int chosenDaySlot, int chosenSubject,string subjects[10],s
 }
 
 //prompt user to choose time slot
-void ChooseTime(int&chosenTimeSlot,int chosenDaySlot,string&TimeSlot,string timeslots[2][6]) 
+void ChooseTime(int chosenDaySlot,string&TimeSlot,string timeslots[2][6]) 
 {
     string yn;
     int onceAweek=1;
+    int chosenTimeSlot;
     do
     {
         cout <<"----------------------------------------------------------------"<<endl;
@@ -532,7 +534,7 @@ void ChooseTime(int&chosenTimeSlot,int chosenDaySlot,string&TimeSlot,string time
     return;
 }
 
-void displayClass(string classNameTXT[20],int&enlistedClasses) //prints out contents of a class file
+void displayClass(string classNameTXT[20],int enlistedClasses) //prints out contents of a class file
 {
     cout <<"\nHere are the details of the class: "<<endl;
     cout <<"----------------------------------------------------------------"<<endl;
@@ -551,7 +553,7 @@ void displayClass(string classNameTXT[20],int&enlistedClasses) //prints out cont
 }
 
 //if no teacher or no student enlisted
-void incompleteDetails(bool&resetbutton,string classNameTXT[20],int&enlistedClasses) 
+void incompleteDetails(bool&resetbutton,string classNameTXT[20],int enlistedClasses) 
 {
     remove(classNameTXT[enlistedClasses].c_str()); //deletes file from directory
     fstream deleteFile("Class Files List.txt",ios::in); //removes file name from Class Files List.txt
@@ -681,7 +683,7 @@ string Subject,string&teacherFullNameA) //prompts user to assign teacher
 //prompts user to enlist student
 void enlistStudent(bool&resetbutton, bool&studentRegistered,bool&studentEnlistedAlready,bool&conflictingSchedule,
 string Subject, string DaySlot, string TimeSlot,string&studentDetails,const int maxNumOfStudents,
-string(&studentClassList)[5][100]) 
+string studentClassList[5][100]) 
 {
     string yn,studentLastName,studentGivenName,studentMiddleInitial,studentFullName,studentNumber;
     do 
@@ -766,7 +768,7 @@ string(&studentClassList)[5][100])
 }
 
 //prompts user to choose which class to view
-void ChooseClassView(int&chosenClassView,string classNames[20],string classNameTXT[20],
+void ChooseClassView(int chosenClassView,string classNames[20],string classNameTXT[20],
 const int maxNumOfClasses,int&enlistedClasses) 
 {
     enlistedClasses=0;
@@ -815,8 +817,8 @@ const int maxNumOfClasses,int&enlistedClasses)
 }
 
 //updates Class Files List.txt, Class List.txt, and Student-Class List.txt
-void updateTextFiles(string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
-const int maxNumOfStudents,int&enlistedClasses) 
+void updateTextFiles(string classNames[20],string classNameTXT[20],string studentClassList[5][100],
+const int maxNumOfStudents,int enlistedClasses) 
 {
     ofstream checkClassList("Class List.txt");
     ofstream classFilesList("Class Files List.txt");
@@ -853,7 +855,7 @@ const int maxNumOfStudents,int&enlistedClasses)
 }
 
 //prompts user to choose a class to delete
-void ChooseClassDelete(int&chosenClassDelete,
+void ChooseClassDelete(int chosenClassDelete,
 string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
 const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses) 
 {
@@ -975,7 +977,7 @@ string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][1
 const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
 {
     //declaring important variables
-    int chosenSubject, chosenDaySlot, chosenTimeSlot, chosenSection;
+    int chosenSubject,chosenDaySlot;
     string Subject, Section, DaySlot, TimeSlot,teacherFullNameA,studentDetails;
     const int numberofsubjects=10;
     string subjects[numberofsubjects]={"Programming", "Drafting", "Data Analysis",
@@ -998,7 +1000,7 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
 
     //display and choose section
     displaySections(chosenSubject,subjects,sections,numberofsections);
-    ChooseSection(MainResetButton,chosenSection,Section,Subject,sections);
+    ChooseSection(MainResetButton,Section,Subject,sections);
     if (MainResetButton) //if class is aleady enlisted
     {
         return; //back to main menu
@@ -1009,7 +1011,7 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
 
     //display and choose time slot
     displayTimeSlots(chosenDaySlot,chosenSubject,subjects,timeslots);
-    ChooseTime(chosenTimeSlot,chosenDaySlot,TimeSlot,timeslots);
+    ChooseTime(chosenDaySlot,TimeSlot,timeslots);
     ClassContents newclass(Subject,Section,DaySlot,TimeSlot);
 
     //create new class file and display contents of file
@@ -1098,64 +1100,66 @@ const int maxNumofClasses,const int maxNumOfStudents,int&enlistedClasses)
     cout <<"----------------------------------------------------------------"<<endl;
     cout <<"Option 1: View details of a class"<<endl;
     cout <<"Option 2: Delete a class"<<endl;
-    cout <<"Option 3: Return to main menu"<<endl;
+    cout <<"Option 3: Return to menu of Class Registration System "<<endl;
     cout <<"\nPlease enter the number of your choice: ";
     int option;
     cin >>option;
     inputvalpath(option); //makes sure user only inputs 1 2 or 3
 
-    if (option==1)//view details of a class
+    switch(option)
     {
-        cout <<"\nHere is the list of enlisted classes: "<<endl;
-        cout <<"----------------------------------------------------------------"<<endl;
-        fstream displayClassList ("Class List.txt", ios::in);
-        if (displayClassList.is_open())
-        {
-            int i=1;
-            string line;
-            while (getline(displayClassList,line))
+        case 1: //view details of a class
+            cout <<"\nHere is the list of enlisted classes: "<<endl;
+            cout <<"----------------------------------------------------------------"<<endl;
             {
-                cout <<i<<". "<<line<<endl; //displays contents of class list
-                i++;
-            } 
-            displayClassList.close();
-        }
-        //prompt user to choose class to view
-        ChooseClassView(chosenClassView,classNames,classNameTXT,maxNumofClasses,enlistedClasses); 
-        MainResetButton=true; //back to main menu after displaying class details
-        return;
-    }
+                fstream displayClassList ("Class List.txt", ios::in);
+                if (displayClassList.is_open())
+                {
+                    int i=1;
+                    string line;
+                    while (getline(displayClassList,line))
+                    {
+                        cout <<i<<". "<<line<<endl; //displays contents of class list
+                        i++;
+                    } 
+                    displayClassList.close();
+                }
+            }
+            //prompt user to choose class to view
+            ChooseClassView(chosenClassView,classNames,classNameTXT,maxNumofClasses,enlistedClasses); 
+            MainResetButton=true; //back to main menu after displaying class details
+            return;
 
-    else if (option==2)//delete a class
-    {
-        cout <<"\nHere is the list of enlisted classes: "<<endl;
-        cout <<"----------------------------------------------------------------"<<endl;
-        fstream displayClassList ("Class List.txt", ios::in);
-        if (displayClassList.is_open())
-        {
-            int i=1;
-            string line;
-            while (getline(displayClassList,line))
+        case 2: //delete a class
+            cout <<"\nHere is the list of enlisted classes: "<<endl;
+            cout <<"----------------------------------------------------------------"<<endl;
             {
-                cout <<i<<". "<<line<<endl; //displays contents of class list
-                i++;
-            } 
-            displayClassList.close();
-        }
-        //prompt user to choose class to delete
-        ChooseClassDelete(chosenClassDelete,classNames,classNameTXT,studentClassList,
-        maxNumofClasses,maxNumOfStudents,enlistedClasses); 
-        MainResetButton=true; //back to main menu after deleting class
-        return;
-    }
-    else //Option 3
-    {  
-        MainResetButton=true; //return to main menu
-        return;
-    }
+                fstream displayClassList ("Class List.txt", ios::in);
+                if (displayClassList.is_open())
+                {
+                    int i=1;
+                    string line;
+                    while (getline(displayClassList,line))
+                    {
+                        cout <<i<<". "<<line<<endl; //displays contents of class list
+                        i++;
+                    } 
+                    displayClassList.close();
+                }
+            }
+            //prompt user to choose class to delete
+            ChooseClassDelete(chosenClassDelete,classNames,classNameTXT,studentClassList,
+            maxNumofClasses,maxNumOfStudents,enlistedClasses); 
+            MainResetButton=true; //back to main menu after deleting class
+            return;
+
+        case 3: //return to main menu
+            MainResetButton=true; 
+            return;
+    }   
 }
 
-void ClassRegistrationSystem()
+void ClassRegistrationSystem(bool&MenuResetButton)
 {
     const int maxNumOfClasses=20;
     const int maxNumOfStudents=100;
@@ -1165,42 +1169,43 @@ void ClassRegistrationSystem()
     //array for checking if student is enlisted in class with different section or if conflicting schedule
     string studentClassList[StudentSubjectSectionDayslotTimeslot][maxNumOfStudents];
     int enlistedClasses=0;
-    bool MainResetButton=false; //if it remains false, 
+    bool MainResetButton;
     int chosenpath; //create new class or edit class
     do
     {
         MainResetButton=false;
         //displaying options
         cout <<"----------------------------------------------------------------"<<endl;
-        cout <<"This is the main menu. What do you wish to do?:"<<endl;
+        cout <<"This is the menu for the Class Registration System. What do you wish to do?:"<<endl;
         cout <<"1 - Create a new class."<<endl;
         cout <<"2 - View/Delete existing classes."<<endl;
-        cout <<"3 - Exit the program."<<endl;
+        cout <<"3 - Return to main menu."<<endl;
         cout <<"----------------------------------------------------------------"<<endl;
         cout <<"Please enter the number of your choice: ";
         cin >>chosenpath;
         inputvalpath(chosenpath);
-        if (chosenpath==1)//user wants to create a new class
+        switch (chosenpath)//user wants to create a new class
         {
-            bool placeholder; //placeholder just to pass in function
-            //update arrays
-            fileScan(placeholder,classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses); 
-            creatingNewClass(MainResetButton,classNames,classNameTXT,studentClassList,
-            maxNumOfClasses,maxNumOfStudents,enlistedClasses);
-            //MainResetButton always returns true for path 1, loops function
-        }
-        else if(chosenpath==2)//user wants to view classes
-        {
-            //update arrays
-            fileScan(MainResetButton,classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses); 
-            viewDeleteClasses(MainResetButton,classNames,classNameTXT,studentClassList,
-            maxNumOfClasses,maxNumOfStudents,enlistedClasses); 
-            //MainResetButton always returns true for path 2, loops function
-        }
-        else //exit the program if user inputs 3
-        {
-            cout <<"\nThank you and goodbye."<<endl;
-            return; //MainResetButton is still false, program exits
-        }
+            case 1: //create a new class
+                bool placeholder; //placeholder just to pass in function
+                //update arrays
+                fileScan(placeholder,classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses); 
+                creatingNewClass(MainResetButton,classNames,classNameTXT,studentClassList,
+                maxNumOfClasses,maxNumOfStudents,enlistedClasses);
+                //MainResetButton always returns true for path 1, loops function
+                break;
+            case 2: //view or delete classes      
+                //update arrays
+                fileScan(MainResetButton,classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses); 
+                viewDeleteClasses(MainResetButton,classNames,classNameTXT,studentClassList,
+                maxNumOfClasses,maxNumOfStudents,enlistedClasses); 
+                //MainResetButton always returns true for path 2, loops function
+                break;
+            case 3:
+                //return to main menu if user inputs 3       
+                cout <<"\nReturning to main menu..."<<endl;
+                MenuResetButton=true;
+                return;     
+        }      
     }while (MainResetButton==true); //will always loop until user takes path 3
 }
