@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1700284303 source:c:\users\marvi\onedrive\desktop\c++\oopblock2 - tan\main.cpp
+	<iostream>
+	"Header_Tan.H"
+
+1700559852 c:\users\marvi\onedrive\desktop\c++\oopblock2 - tan\header_tan.h
+	<iostream>
+	<fstream>
+	<string.h>
+
