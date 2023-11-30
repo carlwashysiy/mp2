@@ -24,10 +24,10 @@ int main()
         switch(block)
         {
             case 1:
-                //student registration system
+                block1(MenuResetButton);
                 break;
             case 2:
-                //teacher registration system
+                TeacherMenu(MenuResetButton);
                 break;
             case 3:
                 ClassRegistrationSystem(MenuResetButton);
