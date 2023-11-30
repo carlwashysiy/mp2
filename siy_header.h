@@ -955,6 +955,9 @@ void TeacherMenu(bool&MenuResetButton)
     return;
 }
 
+/////////////////////////////////////////////////////
+////////////////////BLOCK 3
+
 //declaring functions so that the classes can use them
 void incompleteDetails(bool&resetbutton,string classNameTXT[20],int enlistedClasses);
 void inputval(string&yn);
@@ -1023,10 +1026,10 @@ class ClassContents //parent class
         }
 
         // displays sections to be chosen
-        void displaySections(string Subject,string sections[2], const int numberofsections)
+        void displaySections(string sections[2], const int numberofsections)
         {
             cout << "----------------------------------------------------------------" << endl;
-            cout << "Here's the list of sections for your " << Subject << " class: " << endl
+            cout << "Here's the list of sections for your " << subject << " class: " << endl
                  << "" << endl;
             for (int i = 0; i < numberofsections; i++)
             {
@@ -1036,7 +1039,7 @@ class ClassContents //parent class
         }
 
         // prompts user to choose a section
-        void ChooseSection(bool &resetbutton, string &Section, string Subject, string sections[2])
+        void ChooseSection(bool &resetbutton, string &Section, string sections[2])
         {
             int chosenSection;
             string yn;
@@ -1065,7 +1068,7 @@ class ClassContents //parent class
             // checking if class is enlisted already
             fstream checkClassList("Class List.txt", ios::in);
             bool classEnlistedAlready = false;
-            string classNamesCheck = Subject + " " + Section;
+            string classNamesCheck = subject + " " + Section;
             if (checkClassList.is_open())
             {
                 string line;
@@ -1089,10 +1092,10 @@ class ClassContents //parent class
         }
 
         // displays days to be chosen
-        void displayDays(string Subject,string dayslots[8], const int numberofdays)
+        void displayDays(string dayslots[8], const int numberofdays)
         {
             cout << "----------------------------------------------------------------" << endl;
-            cout << "Here's the list of day slots for your " << Subject << " class: " << endl
+            cout << "Here's the list of day slots for your " << subject << " class: " << endl
                  << "" << endl;
             for (int i = 0; i < numberofdays; i++)
             {
@@ -1129,10 +1132,10 @@ class ClassContents //parent class
         }
 
         // if user chose 1 day per week
-        void displayTimeSlots(int chosenDaySlot, string Subject, string timeslots[2][6])
+        void displayTimeSlots(int chosenDaySlot, string timeslots[2][6])
         {
             cout << "----------------------------------------------------------------" << endl;
-            cout << "Here's the list of time slots for your " << Subject << " class: " << endl
+            cout << "Here's the list of time slots for your " << subject << " class: " << endl
                  << "" << endl;
             if (chosenDaySlot == 1 || chosenDaySlot == 2) // twice a week schedule MTh, TF
             {
@@ -1247,8 +1250,7 @@ class TeacherClass:public ClassContents //child class for teacher
         }
 
         // prompts user to assign teacher
-        void assigningTeacher(bool &resetbutton, bool &teacherRegistered, bool &subjectNotListed,
-                              string Subject, string &teacherFullNameA)
+        void assigningTeacher(bool &resetbutton, bool &teacherRegistered, bool &subjectNotListed, string &teacherFullNameA)
         {
             string yn, teacherLastName, teacherGivenName, teacherMiddleInitial, teacherFullNameB, teacherLastGivenName,
                 employeeNumber, teacherDetails;
@@ -1316,7 +1318,7 @@ class TeacherClass:public ClassContents //child class for teacher
                     if (getline(checkTeacherFile, checkSubjects))
                     {
                         // .find will return npos if subject is not found
-                        if (checkSubjects.find(Subject) == string::npos)
+                        if (checkSubjects.find(subject) == string::npos)
                         {
                             cout << "\nSubject is not listed in teacher's information." << endl;
                             subjectNotListed = true;
@@ -1330,7 +1332,8 @@ class TeacherClass:public ClassContents //child class for teacher
             // teacher is not registered
             else
             {
-                cout << "\nTeacher not found in database! Please check your spelling or make sure that the teacher is registered." << endl;
+                cout << "\nTeacher not found in database!"
+                     << "\nPlease check your spelling or make sure that the teacher is registered." << endl;
                 resetbutton = true;
                 return;
             }
@@ -1368,8 +1371,7 @@ class Student:public ClassContents //child class for students
 
         // prompts user to enlist student
         void enlistStudent(bool &resetbutton, bool &studentRegistered, bool &studentEnlistedAlready, bool &conflictingSchedule,
-                           string Subject, string DaySlot, string TimeSlot, string &studentDetails, const int maxNumOfStudents,
-                           string studentClassList[5][100])
+                           string &studentDetails, const int maxNumOfStudents,string studentClassList[5][100])
         {
             string yn, studentLastName, studentGivenName, studentMiddleInitial, studentFullName, studentNumber;
             do
@@ -1426,7 +1428,7 @@ class Student:public ClassContents //child class for students
                 // checking array if student is enlisted in subject with same or different section
                 for (int i = 0; i < maxNumOfStudents; i++)
                 {
-                    if (studentClassList[0][i] == studentDetails && studentClassList[1][i] == Subject)
+                    if (studentClassList[0][i] == studentDetails && studentClassList[1][i] == subject)
                     {
                         cout << "\nStudent is already enlisted in this subject!";
                         studentEnlistedAlready = true;
@@ -1438,7 +1440,7 @@ class Student:public ClassContents //child class for students
                     // checking for conflicting schedule
                     for (int i = 0; i < maxNumOfStudents; i++)
                     {
-                        if (studentClassList[0][i] == studentDetails && studentClassList[3][i] == DaySlot && studentClassList[4][i] == TimeSlot)
+                        if (studentClassList[0][i] == studentDetails && studentClassList[3][i] == dayslot && studentClassList[4][i] == timeslot)
                         {
                             cout << "\nConflicting schedule! Student is already in a class with the same day and time.";
                             conflictingSchedule = true;
@@ -1455,8 +1457,8 @@ class Student:public ClassContents //child class for students
 
         //appending students to class file
         void appendstudent(bool&resetbutton,bool&enlistagain,bool studentRegistered,bool studentEnlistedAlready,
-        bool conflictingSchedule,string Subject,string Section,string(&classNames)[20],string(&classNameTXT)[20],
-        string(&studentClassList)[5][100],const int maxNumOfClasses,int&enlistedClasses)
+        bool conflictingSchedule,string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
+        const int maxNumOfClasses,int&enlistedClasses)
         {
             bool placeholder;
             //updating arrays
@@ -1543,7 +1545,7 @@ class Student:public ClassContents //child class for students
                     }
                 }
                 //adding class to Class List.txt
-                classNames[enlistedClasses]=Subject+" "+Section;
+                classNames[enlistedClasses]=subject+" "+section;
                 if (appendClassList.is_open())
                 {
                     appendClassList <<classNames[enlistedClasses]<<endl; //append class in class list
@@ -1929,9 +1931,6 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
     return;
 }
 
-
-////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
 //PATH 1
 void creatingNewClass(bool&MainResetButton,
 string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
@@ -1942,9 +1941,9 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
     string Subject, Section, DaySlot, TimeSlot,teacherFullNameA,studentDetails;
     const int numberofsubjects=10;
     string subjects[numberofsubjects]={"Programming", "Drafting", "Data Analysis",
-                                   "Circuits 1", "OOP", "Circuits 2", 
-                                   "Electronics 1","Electronics 2", 
-                                   "Logic Circuits", "Microprocessors"};
+                                        "Circuits 1", "OOP", "Circuits 2", 
+                                        "Electronics 1","Electronics 2", 
+                                        "Logic Circuits", "Microprocessors"};
     const int numberofsections=2;
     string sections[numberofsections]={"A","B"};
     const int numberofdays=8;
@@ -1961,18 +1960,18 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
     newclass.ChooseSubject(Subject,subjects);
 
     //display and choose section
-    newclass.displaySections(Subject, sections, numberofsections);
-    newclass.ChooseSection(MainResetButton, Section, Subject, sections);
+    newclass.displaySections(sections, numberofsections);
+    newclass.ChooseSection(MainResetButton, Section, sections);
     if (MainResetButton) //if class is aleady enlisted
     {
         return; //back to main menu
     }
     //display and choose day slot
-    newclass.displayDays(Subject, dayslots, numberofdays);
+    newclass.displayDays(dayslots, numberofdays);
     newclass.ChooseDay(chosenDaySlot, DaySlot, dayslots);
 
     //display and choose time slot
-    newclass.displayTimeSlots(chosenDaySlot, Subject, timeslots);
+    newclass.displayTimeSlots(chosenDaySlot, timeslots);
     newclass.ChooseTime(chosenDaySlot, TimeSlot, timeslots);
 
     //create new class file and display contents of file
@@ -1998,7 +1997,7 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
         {
             bool teacherRegistered,subjectNotListed;
             TeacherClass tchr(Subject,Section,DaySlot,TimeSlot);
-            tchr.assigningTeacher(reset,teacherRegistered,subjectNotListed,Subject,teacherFullNameA); 
+            tchr.assigningTeacher(reset,teacherRegistered,subjectNotListed,teacherFullNameA); 
             //includes the process of checking if teacher is in database
             tchr.setTeacher(teacherFullNameA);
             tchr.appendteacher(subjectNotListed,teacherRegistered,classNameTXT,enlistedClasses);
@@ -2029,10 +2028,10 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
         //includes process of checking if student is in database 
         Student stdnt(Subject,Section,DaySlot,TimeSlot);
         stdnt.enlistStudent(resetbutton,studentRegistered,studentEnlistedAlready,conflictingSchedule,
-        Subject,DaySlot,TimeSlot,studentDetails,maxNumOfStudents,studentClassList); 
+        studentDetails,maxNumOfStudents,studentClassList); 
         stdnt.setStudent(studentDetails);
         stdnt.appendstudent(resetbutton,enlistagain,studentRegistered,studentEnlistedAlready,conflictingSchedule,
-        Subject,Section,classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses);
+        classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses);
         if (resetbutton==true) //if user is done enlisting students
         {
             MainResetButton=true;
@@ -2041,10 +2040,6 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
     }while (enlistagain==true); //if user is not done enlisting students
 }
 
-
-
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
 //PATH 2
 void viewDeleteClasses(bool&MainResetButton,
 string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
