@@ -986,8 +986,8 @@ class ClassContents //parent class
         // displays subjects to be chosen
         void displaySubjects(string subjects[10], const int numberofsubjects)
         {
-            cout << "----------------------------------------------------------------" << endl;
-            cout << "Here is the list of available subjects: " << endl
+            cout << "----------------------------------------------------------------" << endl
+                 << "Here is the list of available subjects: " << endl
                  << "" << endl;
             for (int i = 0; i < numberofsubjects; i++)
             {
@@ -1003,8 +1003,8 @@ class ClassContents //parent class
             int chosenSubject;
             do
             {
-                cout << "----------------------------------------------------------------" << endl;
-                cout << "Please enter the number of your chosen subject from the list: ";
+                cout << "----------------------------------------------------------------" << endl
+                     << "Please enter the number of your chosen subject from the list: ";
                 cin >> chosenSubject;
                 // makes sure user only inputs number from 1-10
                 while (cin.fail() == true || cin.peek() != '\n' || (chosenSubject > 10 || chosenSubject < 1))
@@ -1028,8 +1028,8 @@ class ClassContents //parent class
         // displays sections to be chosen
         void displaySections(string sections[2], const int numberofsections)
         {
-            cout << "----------------------------------------------------------------" << endl;
-            cout << "Here's the list of sections for your " << subject << " class: " << endl
+            cout << "----------------------------------------------------------------" << endl
+                 << "Here's the list of sections for your " << subject << " class: " << endl
                  << "" << endl;
             for (int i = 0; i < numberofsections; i++)
             {
@@ -1045,8 +1045,8 @@ class ClassContents //parent class
             string yn;
             do
             {
-                cout << "----------------------------------------------------------------" << endl;
-                cout << "Please enter the number of your chosen section from the list: ";
+                cout << "----------------------------------------------------------------" << endl
+                     << "Please enter the number of your chosen section from the list: ";
                 cin >> chosenSection;
                 // makes sure user only inputs 1 or 2
                 while (cin.fail() == true || cin.peek() != '\n' || (chosenSection > 2 || chosenSection < 1))
@@ -1094,8 +1094,8 @@ class ClassContents //parent class
         // displays days to be chosen
         void displayDays(string dayslots[8], const int numberofdays)
         {
-            cout << "----------------------------------------------------------------" << endl;
-            cout << "Here's the list of day slots for your " << subject << " class: " << endl
+            cout << "----------------------------------------------------------------" << endl
+                 << "Here's the list of day slots for your " << subject << " class: " << endl
                  << "" << endl;
             for (int i = 0; i < numberofdays; i++)
             {
@@ -1110,8 +1110,8 @@ class ClassContents //parent class
             string yn;
             do
             {
-                cout << "----------------------------------------------------------------" << endl;
-                cout << "Please enter the number of your chosen day slot from the list: ";
+                cout << "----------------------------------------------------------------" << endl
+                     << "Please enter the number of your chosen day slot from the list: ";
                 cin >> chosenDaySlot;
                 // makes sure user only inputs a number from 1-8
                 while (cin.fail() == true || cin.peek() != '\n' || (chosenDaySlot > 8 || chosenDaySlot < 1))
@@ -1134,8 +1134,8 @@ class ClassContents //parent class
         // if user chose 1 day per week
         void displayTimeSlots(int chosenDaySlot, string timeslots[2][6])
         {
-            cout << "----------------------------------------------------------------" << endl;
-            cout << "Here's the list of time slots for your " << subject << " class: " << endl
+            cout << "----------------------------------------------------------------" << endl
+                 << "Here's the list of time slots for your " << subject << " class: " << endl
                  << "" << endl;
             if (chosenDaySlot == 1 || chosenDaySlot == 2) // twice a week schedule MTh, TF
             {
@@ -1163,8 +1163,8 @@ class ClassContents //parent class
             int chosenTimeSlot;
             do
             {
-                cout << "----------------------------------------------------------------" << endl;
-                cout << "Please enter the number of your chosen time slot from the list: ";
+                cout << "----------------------------------------------------------------" << endl
+                     << "Please enter the number of your chosen time slot from the list: ";
                 cin >> chosenTimeSlot;
                 if (chosenDaySlot == 1 || chosenDaySlot == 2) // twice a week schedule MTh, TF
                 {
@@ -1257,8 +1257,8 @@ class TeacherClass:public ClassContents //child class for teacher
             do
             {
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "\nPlease enter the teacher's employee number." << endl;
-                cout << "Employee Number: 01-";
+                cout << "\nPlease enter the teacher's employee number." << endl
+                     << "Employee Number: 01-";
                 getline(cin, employeeNumber);
                 cout << "The employee number is: 01-" << employeeNumber << endl;
                 cout << "Is this correct? Y/N: ";
@@ -1268,8 +1268,8 @@ class TeacherClass:public ClassContents //child class for teacher
             do
             {
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "Please enter the teacher's name: " << endl;
-                cout << "Last name: ";
+                cout << "Please enter the teacher's name: " << endl
+                     << "Last name: ";
                 getline(cin, teacherLastName);
                 cout << "Given name: ";
                 getline(cin, teacherGivenName);
@@ -1376,8 +1376,8 @@ class Student:public ClassContents //child class for students
             string yn, studentLastName, studentGivenName, studentMiddleInitial, studentFullName, studentNumber;
             do
             {
-                cout << "\nPlease enter the student number." << endl;
-                cout << "Student Number: 23-";
+                cout << "\nPlease enter the student number." << endl
+                     << "Student Number: 23-";
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 getline(cin, studentNumber);
                 cout << "The student number is: 23-" << studentNumber << endl;
@@ -1389,8 +1389,8 @@ class Student:public ClassContents //child class for students
             do
             {
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "\nPlease enter the student's name: " << endl;
-                cout << "Last name: ";
+                cout << "\nPlease enter the student's name: " << endl
+                     << "Last name: ";
                 getline(cin, studentLastName);
                 cout << "Given name: ";
                 getline(cin, studentGivenName);
@@ -1672,8 +1672,8 @@ void inputvalpath(int&path) //makes sure user only inputs 1 2 or 3
 // prints out contents of a class file
 void displayClass(string classNameTXT[20],int enlistedClasses) 
 {
-    cout <<"\nHere are the details of the class: "<<endl;
-    cout <<"----------------------------------------------------------------"<<endl;
+    cout <<"\nHere are the details of the class: "<<endl
+         <<"----------------------------------------------------------------"<<endl;
     fstream showClass(classNameTXT[enlistedClasses], ios::in);
     if (showClass.is_open())
     {
@@ -1686,6 +1686,26 @@ void displayClass(string classNameTXT[20],int enlistedClasses)
     }
     cout <<"----------------------------------------------------------------"<<endl;
     return;
+}
+
+void displayClassList()
+{
+    cout << "\nHere is the list of enlisted classes: " << endl
+         << "----------------------------------------------------------------" << endl;
+    {
+        fstream displayClassList("Class List.txt", ios::in);
+        if (displayClassList.is_open())
+        {
+            int i = 1;
+            string line;
+            while (getline(displayClassList, line))
+            {
+                cout << i << ". " << line << endl; // displays contents of class list
+                i++;
+            }
+            displayClassList.close();
+        }
+    }
 }
 
 //if no teacher or no student enlisted
@@ -1745,8 +1765,8 @@ const int maxNumOfClasses,int&enlistedClasses)
     string yn;
     do 
     {
-        cout <<"----------------------------------------------------------------"<<endl;
-        cout <<"Please enter the number of the class you wish to view: ";
+        cout <<"----------------------------------------------------------------"<<endl
+             <<"Please enter the number of the class you wish to view: ";
         cin >>chosenClassView;
         //makes sure user only enters valid number
         while(cin.fail()==true||cin.peek()!='\n'||(chosenClassView>enlistedClasses||chosenClassView<1))
@@ -1763,8 +1783,8 @@ const int maxNumOfClasses,int&enlistedClasses)
     }while (yn=="n"||yn=="N");
 
     //displaying class details
-    cout <<"\nHere are the details of the class: "<<endl;
-    cout <<"----------------------------------------------------------------"<<endl;
+    cout <<"\nHere are the details of the class: "<<endl
+         <<"----------------------------------------------------------------"<<endl;
     fstream viewClass (classNameTXT[chosenClassView-1],ios::in);
     if (viewClass.is_open())
     {
@@ -1833,8 +1853,8 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
     string yn;
     do 
     {
-        cout <<"----------------------------------------------------------------"<<endl;
-        cout <<"Please enter the number of the class you wish to delete: ";
+        cout <<"----------------------------------------------------------------"<<endl
+             <<"Please enter the number of the class you wish to delete: ";
         cin >>chosenClassDelete;
         //makes sure user enters valid number
         while(cin.fail()==true||cin.peek()!='\n'||(chosenClassDelete>enlistedClasses||chosenClassDelete<1))
@@ -1962,10 +1982,9 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
     //display and choose section
     newclass.displaySections(sections, numberofsections);
     newclass.ChooseSection(MainResetButton, Section, sections);
-    if (MainResetButton) //if class is aleady enlisted
-    {
-        return; //back to main menu
-    }
+    if (MainResetButton) return;
+    // back to main menu if class is aleady enlisted
+
     //display and choose day slot
     newclass.displayDays(dayslots, numberofdays);
     newclass.ChooseDay(chosenDaySlot, DaySlot, dayslots);
@@ -2066,44 +2085,14 @@ const int maxNumofClasses,const int maxNumOfStudents,int&enlistedClasses)
     switch(option)
     {
         case 1: //view details of a class
-            cout <<"\nHere is the list of enlisted classes: "<<endl;
-            cout <<"----------------------------------------------------------------"<<endl;
-            {
-                fstream displayClassList ("Class List.txt", ios::in);
-                if (displayClassList.is_open())
-                {
-                    int i=1;
-                    string line;
-                    while (getline(displayClassList,line))
-                    {
-                        cout <<i<<". "<<line<<endl; //displays contents of class list
-                        i++;
-                    } 
-                    displayClassList.close();
-                }
-            }
+            displayClassList();
             //prompt user to choose class to view
             ChooseClassView(chosenClassView,classNames,classNameTXT,maxNumofClasses,enlistedClasses); 
             MainResetButton=true; //back to main menu after displaying class details
             return;
 
         case 2: //delete a class
-            cout <<"\nHere is the list of enlisted classes: "<<endl;
-            cout <<"----------------------------------------------------------------"<<endl;
-            {
-                fstream displayClassList ("Class List.txt", ios::in);
-                if (displayClassList.is_open())
-                {
-                    int i=1;
-                    string line;
-                    while (getline(displayClassList,line))
-                    {
-                        cout <<i<<". "<<line<<endl; //displays contents of class list
-                        i++;
-                    } 
-                    displayClassList.close();
-                }
-            }
+            displayClassList();
             //prompt user to choose class to delete
             ChooseClassDelete(chosenClassDelete,classNames,classNameTXT,studentClassList,
             maxNumofClasses,maxNumOfStudents,enlistedClasses); 
