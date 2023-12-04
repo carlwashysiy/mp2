@@ -955,6 +955,9 @@ void TeacherMenu(bool&MenuResetButton)
     return;
 }
 
+/////////////////////////////////////////////////////
+////////////////////BLOCK 3
+
 //declaring functions so that the classes can use them
 void incompleteDetails(bool&resetbutton,string classNameTXT[20],int enlistedClasses);
 void inputval(string&yn);
@@ -978,6 +981,226 @@ class ClassContents //parent class
             section=s;
             dayslot=ds;
             timeslot=ts;
+        }
+
+        // displays subjects to be chosen
+        void displaySubjects(string subjects[10], const int numberofsubjects)
+        {
+            cout << "----------------------------------------------------------------" << endl
+                 << "Here is the list of available subjects: " << endl
+                 << "" << endl;
+            for (int i = 0; i < numberofsubjects; i++)
+            {
+                cout << i + 1 << ". " << subjects[i] << endl;
+            }
+            return;
+        }
+
+        // prompts user to choose a subject
+        void ChooseSubject(string &Subject, string subjects[10])
+        {
+            string yn;
+            int chosenSubject;
+            do
+            {
+                cout << "----------------------------------------------------------------" << endl
+                     << "Please enter the number of your chosen subject from the list: ";
+                cin >> chosenSubject;
+                // makes sure user only inputs number from 1-10
+                while (cin.fail() == true || cin.peek() != '\n' || (chosenSubject > 10 || chosenSubject < 1))
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Please enter a number from 1-10: ";
+                    cin >> chosenSubject;
+                }
+                cout << "You have chosen: " << subjects[chosenSubject - 1];
+                cout << "\nIs this correct? Y/N: "; // verification
+                cin >> yn;
+                inputval(yn); // makes sure user only inputs y or n
+            } while (yn == "n" || yn == "N");
+            Subject = subjects[chosenSubject - 1];
+            subject = Subject;
+            // exits if user enters "Y"
+            return;
+        }
+
+        // displays sections to be chosen
+        void displaySections(string sections[2], const int numberofsections)
+        {
+            cout << "----------------------------------------------------------------" << endl
+                 << "Here's the list of sections for your " << subject << " class: " << endl
+                 << "" << endl;
+            for (int i = 0; i < numberofsections; i++)
+            {
+                cout << i + 1 << ". " << sections[i] << endl;
+            }
+            return;
+        }
+
+        // prompts user to choose a section
+        void ChooseSection(bool &resetbutton, string &Section, string sections[2])
+        {
+            int chosenSection;
+            string yn;
+            do
+            {
+                cout << "----------------------------------------------------------------" << endl
+                     << "Please enter the number of your chosen section from the list: ";
+                cin >> chosenSection;
+                // makes sure user only inputs 1 or 2
+                while (cin.fail() == true || cin.peek() != '\n' || (chosenSection > 2 || chosenSection < 1))
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Please enter a number from 1-2: ";
+                    cin >> chosenSection;
+                }
+                cout << "You have chosen: " << sections[chosenSection - 1];
+                cout << "\nIs this correct? Y/N: ";
+                cin >> yn;
+                inputval(yn);
+            } while (yn == "n" || yn == "N"); // loops until user enters "Y"
+            Section = sections[chosenSection - 1];
+            section = Section;
+            // exits once user enters "Y"
+
+            // checking if class is enlisted already
+            fstream checkClassList("Class List.txt", ios::in);
+            bool classEnlistedAlready = false;
+            string classNamesCheck = subject + " " + Section;
+            if (checkClassList.is_open())
+            {
+                string line;
+                while (getline(checkClassList, line))
+                {
+                    if (line == classNamesCheck) // if class is found in list
+                    {
+                        classEnlistedAlready = true;
+                        break;
+                    }
+                }
+                checkClassList.close();
+            }
+            if (classEnlistedAlready == true)
+            {
+                cout << "\nClass is already enlisted!" << endl;
+                resetbutton = true; // return function and back to main menu
+                return;
+            }
+            return; // if class is not enlisted, continue
+        }
+
+        // displays days to be chosen
+        void displayDays(string dayslots[8], const int numberofdays)
+        {
+            cout << "----------------------------------------------------------------" << endl
+                 << "Here's the list of day slots for your " << subject << " class: " << endl
+                 << "" << endl;
+            for (int i = 0; i < numberofdays; i++)
+            {
+                cout << i + 1 << ". " << dayslots[i] << endl;
+            }
+            return;
+        }
+
+        // prompts user to choose day slot
+        void ChooseDay(int &chosenDaySlot, string &DaySlot, string dayslots[2])
+        {
+            string yn;
+            do
+            {
+                cout << "----------------------------------------------------------------" << endl
+                     << "Please enter the number of your chosen day slot from the list: ";
+                cin >> chosenDaySlot;
+                // makes sure user only inputs a number from 1-8
+                while (cin.fail() == true || cin.peek() != '\n' || (chosenDaySlot > 8 || chosenDaySlot < 1))
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Please enter a number from 1-8: ";
+                    cin >> chosenDaySlot;
+                }
+                cout << "You have chosen: " << dayslots[chosenDaySlot - 1];
+                cout << "\nIs this correct? Y/N: ";
+                cin >> yn;
+                inputval(yn);
+            } while (yn == "n" || yn == "N");
+            DaySlot = dayslots[chosenDaySlot - 1];
+            dayslot = DaySlot;
+            return;
+        }
+
+        // if user chose 1 day per week
+        void displayTimeSlots(int chosenDaySlot, string timeslots[2][6])
+        {
+            cout << "----------------------------------------------------------------" << endl
+                 << "Here's the list of time slots for your " << subject << " class: " << endl
+                 << "" << endl;
+            if (chosenDaySlot == 1 || chosenDaySlot == 2) // twice a week schedule MTh, TF
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    cout << i + 1 << ". " << timeslots[0][i] << endl;
+                }
+                return;
+            }
+            else // once a week schedule M, T, W, Th, F, S
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    cout << i + 1 << ". " << timeslots[1][i] << endl;
+                }
+                return;
+            }
+        }
+
+        // prompt user to choose time slot
+        void ChooseTime(int chosenDaySlot, string &TimeSlot, string timeslots[2][6])
+        {
+            string yn;
+            int onceAweek = 1;
+            int chosenTimeSlot;
+            do
+            {
+                cout << "----------------------------------------------------------------" << endl
+                     << "Please enter the number of your chosen time slot from the list: ";
+                cin >> chosenTimeSlot;
+                if (chosenDaySlot == 1 || chosenDaySlot == 2) // twice a week schedule MTh, TF
+                {
+                    // makes sure user only inputs a number from 1-6
+                    while (cin.fail() == true || cin.peek() != '\n' || (chosenTimeSlot > 6 || chosenTimeSlot < 1))
+                    {
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        cout << "Please enter a number from 1-6: ";
+                        cin >> chosenTimeSlot;
+                    }
+                    cout << "You have chosen: " << timeslots[0][chosenTimeSlot - 1];
+                    cout << "\nIs this correct? Y/N: ";
+                    cin >> yn;
+                    inputval(yn);
+                    onceAweek = 0; // twice a week schedule
+                }
+                else // once a week schedule M, T, W, Th, F, S
+                {
+                    // makes sure user only inputs a number from 1-3
+                    while (cin.fail() == true || cin.peek() != '\n' || (chosenTimeSlot > 3 || chosenTimeSlot < 1))
+                    {
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        cout << "Please enter a number from 1-3: ";
+                        cin >> chosenTimeSlot;
+                    }
+                    cout << "You have chosen: " << timeslots[1][chosenTimeSlot - 1];
+                    cout << "\nIs this correct? Y/N: ";
+                    cin >> yn;
+                    inputval(yn);
+                }
+            } while (yn == "n" || yn == "N");
+            TimeSlot = timeslots[onceAweek][chosenTimeSlot - 1];
+            timeslot = TimeSlot;
+            return;
         }
 
         //creating new class file with initial details
@@ -1026,8 +1249,99 @@ class TeacherClass:public ClassContents //child class for teacher
             teacher=t;
         }
 
+        // prompts user to assign teacher
+        void assigningTeacher(bool &resetbutton, bool &teacherRegistered, bool &subjectNotListed, string &teacherFullNameA)
+        {
+            string yn, teacherLastName, teacherGivenName, teacherMiddleInitial, teacherFullNameB, teacherLastGivenName,
+                employeeNumber, teacherDetails;
+            do
+            {
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "\nPlease enter the teacher's employee number." << endl
+                     << "Employee Number: 01-";
+                getline(cin, employeeNumber);
+                cout << "The employee number is: 01-" << employeeNumber << endl;
+                cout << "Is this correct? Y/N: ";
+                cin >> yn;
+                inputval(yn);
+            } while (yn == "n" || yn == "N");
+            do
+            {
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Please enter the teacher's name: " << endl
+                     << "Last name: ";
+                getline(cin, teacherLastName);
+                cout << "Given name: ";
+                getline(cin, teacherGivenName);
+                cout << "Middle Initial: ";
+                getline(cin, teacherMiddleInitial);
+                teacherFullNameA = teacherGivenName + " " + teacherMiddleInitial + " " + teacherLastName;
+                cout << "The teacher's name is: " << teacherFullNameA << endl;
+                cout << "Is this correct? Y/N: ";
+                cin >> yn;
+                inputval(yn);
+            } while (yn == "n" || yn == "N");
+
+            // checking if teacher is registered in Teacher List.txt
+            teacherFullNameB = teacherLastName + ", " + teacherGivenName + " " + teacherMiddleInitial;
+            teacherDetails = "01-" + employeeNumber + " " + teacherFullNameB;
+            fstream checkTeacherList("Teacher List.txt", ios::in);
+            teacherRegistered = false;
+            if (checkTeacherList.is_open())
+            {
+                string line;
+                while (getline(checkTeacherList, line))
+                {
+                    if (line == teacherDetails)
+                    {
+                        teacherRegistered = true;
+                    }
+                }
+                checkTeacherList.close();
+            }
+
+            // checking if teacher has subject listed in file
+            if (teacherRegistered)
+            {
+                subjectNotListed = false;
+                teacherLastGivenName = teacherLastName + "_" + teacherGivenName + ".txt";
+                fstream checkTeacherFile(teacherLastGivenName, ios::in);
+                if (checkTeacherFile.is_open())
+                {
+                    for (int i = 1; i < 5; i++)
+                    {
+                        string dummy;
+                        getline(checkTeacherFile, dummy);
+                    }
+                    // starting at the fifth line
+                    string checkSubjects;
+                    if (getline(checkTeacherFile, checkSubjects))
+                    {
+                        // .find will return npos if subject is not found
+                        if (checkSubjects.find(subject) == string::npos)
+                        {
+                            cout << "\nSubject is not listed in teacher's information." << endl;
+                            subjectNotListed = true;
+                            resetbutton = true;
+                        }
+                    }
+                    checkTeacherFile.close();
+                }
+            }
+
+            // teacher is not registered
+            else
+            {
+                cout << "\nTeacher not found in database!"
+                     << "\nPlease check your spelling or make sure that the teacher is registered." << endl;
+                resetbutton = true;
+                return;
+            }
+        }
+
+        //POLYMORPHISM
         //appending teacher to class file
-        void appendteacher(bool subjectNotListed,bool teacherRegistered,string classNameTXT[20],int enlistedClasses)
+        void appendToClass(bool subjectNotListed,bool teacherRegistered,string classNameTXT[20],int enlistedClasses)
         {
             //teacher is registered
             if (!subjectNotListed&&teacherRegistered)
@@ -1057,10 +1371,97 @@ class Student:public ClassContents //child class for students
             student=s;
         }
 
+        // prompts user to enlist student
+        void enlistStudent(bool &resetbutton, bool &studentRegistered, bool &studentEnlistedAlready, bool &conflictingSchedule,
+                           string &studentDetails, const int maxNumOfStudents,string studentClassList[5][100])
+        {
+            string yn, studentLastName, studentGivenName, studentMiddleInitial, studentFullName, studentNumber;
+            do
+            {
+                cout << "\nPlease enter the student number." << endl
+                     << "Student Number: 23-";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                getline(cin, studentNumber);
+                cout << "The student number is: 23-" << studentNumber << endl;
+                cout << "Is this correct? Y/N: ";
+                cin >> yn;
+                inputval(yn);
+            } while (yn == "n" || yn == "N");
+
+            do
+            {
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "\nPlease enter the student's name: " << endl
+                     << "Last name: ";
+                getline(cin, studentLastName);
+                cout << "Given name: ";
+                getline(cin, studentGivenName);
+                cout << "Middle Initial: ";
+                getline(cin, studentMiddleInitial);
+                studentFullName = studentLastName + ", " + studentGivenName + " " + studentMiddleInitial;
+                cout << "The student's name is: " << studentFullName << endl;
+                cout << "Is this correct? Y/N: ";
+                cin >> yn;
+                inputval(yn);
+            } while (yn == "n" || yn == "N");
+
+            // checking if student is registered in Student List.txt
+            studentDetails = "23-" + studentNumber + " " + studentFullName;
+            fstream checkStudentList("Student List.txt", ios::in);
+            studentRegistered = false;
+            studentEnlistedAlready = false;
+            conflictingSchedule = false;
+            if (checkStudentList.is_open())
+            {
+                string line;
+                while (getline(checkStudentList, line))
+                {
+                    if (line == studentDetails)
+                    {
+                        studentRegistered = true;
+                    }
+                }
+                checkStudentList.close();
+            }
+
+            if (studentRegistered == true)
+            {
+                cout << "Student found in database." << endl;
+                // checking array if student is enlisted in subject with same or different section
+                for (int i = 0; i < maxNumOfStudents; i++)
+                {
+                    if (studentClassList[0][i] == studentDetails && studentClassList[1][i] == subject)
+                    {
+                        cout << "\nStudent is already enlisted in this subject!";
+                        studentEnlistedAlready = true;
+                        break;
+                    }
+                }
+                if (!studentEnlistedAlready)
+                {
+                    // checking for conflicting schedule
+                    for (int i = 0; i < maxNumOfStudents; i++)
+                    {
+                        if (studentClassList[0][i] == studentDetails && studentClassList[3][i] == dayslot && studentClassList[4][i] == timeslot)
+                        {
+                            cout << "\nConflicting schedule! Student is already in a class with the same day and time.";
+                            conflictingSchedule = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (studentRegistered == false)
+            {
+                cout << "\nStudent not found in database! Please check your spelling or make sure that the student is registered." << endl;
+            }
+        }
+
+        //POLYMORPHISM
         //appending students to class file
-        void appendstudent(bool&resetbutton,bool&enlistagain,bool studentRegistered,bool studentEnlistedAlready,
-        bool conflictingSchedule,string Subject,string Section,string(&classNames)[20],string(&classNameTXT)[20],
-        string(&studentClassList)[5][100],const int maxNumOfClasses,int&enlistedClasses)
+        void appendToClass(bool&resetbutton,bool&enlistagain,bool studentRegistered,bool studentEnlistedAlready,
+        bool conflictingSchedule,string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
+        const int maxNumOfClasses,int&enlistedClasses)
         {
             bool placeholder;
             //updating arrays
@@ -1104,7 +1505,7 @@ class Student:public ClassContents //child class for students
                     }
                     appendstudent.close();
                 }
-                else cout <<"   FILE NOT OPEN"<<endl;
+                else cout <<"FILE NOT OPEN"<<endl;
 
                 //listing student and class in separate file
                 fstream appendingStudent("Student-Class List.txt",ios::app);
@@ -1147,7 +1548,7 @@ class Student:public ClassContents //child class for students
                     }
                 }
                 //adding class to Class List.txt
-                classNames[enlistedClasses]=Subject+" "+Section;
+                classNames[enlistedClasses]=subject+" "+section;
                 if (appendClassList.is_open())
                 {
                     appendClassList <<classNames[enlistedClasses]<<endl; //append class in class list
@@ -1271,222 +1672,11 @@ void inputvalpath(int&path) //makes sure user only inputs 1 2 or 3
     }
 }
 
-//displays subjects to be chosen
-void displaySubjects(string subjects[10],const int numberofsubjects) 
+// prints out contents of a class file
+void displayClass(string classNameTXT[20],int enlistedClasses) 
 {
-    cout <<"----------------------------------------------------------------"<<endl;
-    cout<<"Here is the list of available subjects: "<<endl<<""<<endl;
-    for (int i=0; i<numberofsubjects; i++)
-    {
-        cout <<i+1<<". "<<subjects[i]<<endl;
-    }
-    return;
-}
-
-//prompts user to choose a subject
-void ChooseSubject(int&chosenSubject,string&Subject,string subjects[10]) 
-{
-    string yn;
-    do 
-    {
-        cout <<"----------------------------------------------------------------"<<endl;
-        cout<<"Please enter the number of your chosen subject from the list: ";
-        cin>> chosenSubject;
-        //makes sure user only inputs number from 1-10
-        while(cin.fail()==true||cin.peek()!='\n'||(chosenSubject>10||chosenSubject<1))
-        {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout<<"Please enter a number from 1-10: ";
-            cin>>chosenSubject;
-        }
-        cout <<"You have chosen: "<<subjects[chosenSubject-1];
-        cout <<"\nIs this correct? Y/N: "; //verification
-        cin>>yn;
-        inputval(yn); //makes sure user only inputs y or n
-   }while (yn=="n"||yn=="N");
-   Subject=subjects[chosenSubject-1];
-   //exits if user enters "Y"
-   return;
-}
-
-//displays sections to be chosen
-void displaySections(int chosenSubject,string subjects[10],string sections[2],const int numberofsections)
-{
-    cout <<"----------------------------------------------------------------"<<endl;
-    cout <<"Here's the list of sections for your "<<subjects[chosenSubject-1]<<" class: "<<endl<<""<<endl;
-    for (int i=0; i<numberofsections; i++)
-    {
-        cout <<i+1<<". "<<sections[i]<<endl;
-    }
-    return;
-}
-
-//prompts user to choose a section
-void ChooseSection(bool&resetbutton,string&Section,string Subject,string sections[2]) 
-{
-    int chosenSection;
-    string yn;
-    do 
-    {
-        cout <<"----------------------------------------------------------------"<<endl;
-        cout<<"Please enter the number of your chosen section from the list: ";
-        cin>> chosenSection;
-        //makes sure user only inputs 1 or 2
-        while(cin.fail()==true||cin.peek()!='\n'||(chosenSection>2||chosenSection<1))
-        {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout<<"Please enter a number from 1-2: ";
-            cin>>chosenSection;
-        }
-        cout <<"You have chosen: "<<sections[chosenSection-1];
-        cout <<"\nIs this correct? Y/N: ";
-        cin>>yn;
-        inputval(yn);
-    }while (yn=="n"||yn=="N");//loops until user enters "Y"
-    Section=sections[chosenSection-1];
-    //exits once user enters "Y"
-
-    //checking if class is enlisted already
-    fstream checkClassList("Class List.txt",ios::in);
-    bool classEnlistedAlready=false;
-    string classNamesCheck=Subject+" "+Section;
-    if (checkClassList.is_open())
-    {
-        string line;
-        while (getline(checkClassList,line))
-        {
-            if (line==classNamesCheck) //if class is found in list
-            {
-                classEnlistedAlready=true;
-                break;
-            }
-        } 
-        checkClassList.close();
-    }
-    if (classEnlistedAlready==true)
-    {
-        cout <<"\nClass is already enlisted!"<<endl;
-        resetbutton=true; //return function and back to main menu
-        return;
-    }
-    return; //if class is not enlisted, continue
-}
-
-
-//displays days to be chosen
-void displayDays(int chosenSubject,string subjects[10],string dayslots[8],const int numberofdays) 
-{
-    cout <<"----------------------------------------------------------------"<<endl;
-    cout <<"Here's the list of day slots for your "<<subjects[chosenSubject-1]<<" class: "<<endl<<""<<endl;
-    for (int i=0; i<numberofdays; i++)
-    {
-        cout <<i+1<<". "<<dayslots[i]<<endl;
-    }
-    return;
-}
-
-//prompts user to choose day slot
-void ChooseDay(int&chosenDaySlot,string&DaySlot,string dayslots[2])
-{
-    string yn;
-    do 
-    {
-        cout <<"----------------------------------------------------------------"<<endl;
-        cout<<"Please enter the number of your chosen day slot from the list: ";
-        cin>> chosenDaySlot;
-        //makes sure user only inputs a number from 1-8
-        while(cin.fail()==true||cin.peek()!='\n'||(chosenDaySlot>8||chosenDaySlot<1))
-        {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout<<"Please enter a number from 1-8: ";
-            cin>>chosenDaySlot;
-        }
-        cout <<"You have chosen: "<<dayslots[chosenDaySlot-1];
-        cout <<"\nIs this correct? Y/N: ";
-        cin>>yn;
-        inputval(yn);
-    }while (yn=="n"||yn=="N");
-    DaySlot=dayslots[chosenDaySlot-1];
-    return;
-}
-
-//if user chose 1 day per week
-void displayTimeSlots(int chosenDaySlot, int chosenSubject,string subjects[10],string timeslots[2][6]) 
-{
-    cout <<"----------------------------------------------------------------"<<endl;
-    cout <<"Here's the list of time slots for your "<<subjects[chosenSubject-1]<<" class: "<<endl<<""<<endl;
-    if (chosenDaySlot==1||chosenDaySlot==2) //twice a week schedule MTh, TF
-    {
-        for (int i=0; i<6; i++)
-        {
-            cout <<i+1<<". "<<timeslots[0][i]<<endl;
-        }
-        return;
-    }
-    else //once a week schedule M, T, W, Th, F, S
-    {
-        for (int i=0; i<3; i++)
-        {
-            cout <<i+1<<". "<<timeslots[1][i]<<endl;
-        }
-        return;
-    }
-}
-
-//prompt user to choose time slot
-void ChooseTime(int chosenDaySlot,string&TimeSlot,string timeslots[2][6]) 
-{
-    string yn;
-    int onceAweek=1;
-    int chosenTimeSlot;
-    do
-    {
-        cout <<"----------------------------------------------------------------"<<endl;
-        cout<<"Please enter the number of your chosen time slot from the list: ";
-        cin>> chosenTimeSlot;
-        if (chosenDaySlot==1||chosenDaySlot==2) //twice a week schedule MTh, TF
-        {
-            //makes sure user only inputs a number from 1-6
-            while(cin.fail()==true||cin.peek()!='\n'||(chosenTimeSlot>6||chosenTimeSlot<1))
-            {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout<<"Please enter a number from 1-6: ";
-                cin>>chosenTimeSlot;
-            }
-            cout <<"You have chosen: "<<timeslots[0][chosenTimeSlot-1];
-            cout <<"\nIs this correct? Y/N: ";
-            cin>>yn;
-            inputval(yn);
-            onceAweek=0; //twice a week schedule
-        }
-        else //once a week schedule M, T, W, Th, F, S
-        {
-            //makes sure user only inputs a number from 1-3
-            while(cin.fail()==true||cin.peek()!='\n'||(chosenTimeSlot>3||chosenTimeSlot<1))
-            {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout<<"Please enter a number from 1-3: ";
-                cin>>chosenTimeSlot;
-            }
-            cout <<"You have chosen: "<<timeslots[1][chosenTimeSlot-1];
-            cout <<"\nIs this correct? Y/N: ";
-            cin>>yn;
-            inputval(yn);
-        }
-    }while(yn=="n"||yn=="N");
-    TimeSlot=timeslots[onceAweek][chosenTimeSlot-1];
-    return;
-}
-
-void displayClass(string classNameTXT[20],int enlistedClasses) //prints out contents of a class file
-{
-    cout <<"\nHere are the details of the class: "<<endl;
-    cout <<"----------------------------------------------------------------"<<endl;
+    cout <<"\nHere are the details of the class: "<<endl
+         <<"----------------------------------------------------------------"<<endl;
     fstream showClass(classNameTXT[enlistedClasses], ios::in);
     if (showClass.is_open())
     {
@@ -1499,6 +1689,26 @@ void displayClass(string classNameTXT[20],int enlistedClasses) //prints out cont
     }
     cout <<"----------------------------------------------------------------"<<endl;
     return;
+}
+
+void displayClassList()
+{
+    cout << "\nHere is the list of enlisted classes: " << endl
+         << "----------------------------------------------------------------" << endl;
+    {
+        fstream displayClassList("Class List.txt", ios::in);
+        if (displayClassList.is_open())
+        {
+            int i = 1;
+            string line;
+            while (getline(displayClassList, line))
+            {
+                cout << i << ". " << line << endl; // displays contents of class list
+                i++;
+            }
+            displayClassList.close();
+        }
+    }
 }
 
 //if no teacher or no student enlisted
@@ -1540,181 +1750,8 @@ void incompleteDetails(bool&resetbutton,string classNameTXT[20],int enlistedClas
     return; //back to main menu after deleting class file
 }
 
-void assigningTeacher(bool&resetbutton,bool&teacherRegistered,bool&subjectNotListed,
-string Subject,string&teacherFullNameA) //prompts user to assign teacher
-{
-    string yn,teacherLastName,teacherGivenName,teacherMiddleInitial,teacherFullNameB,teacherLastGivenName,
-    employeeNumber,teacherDetails;
-    do 
-    {
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout <<"\nPlease enter the teacher's employee number."<<endl;
-        cout <<"Employee Number: 01-";
-        getline(cin,employeeNumber);
-        cout <<"The employee number is: 01-"<<employeeNumber<<endl;
-        cout <<"Is this correct? Y/N: ";
-        cin >>yn;
-        inputval(yn);  
-    }while (yn=="n"||yn=="N");
-    do 
-    {
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout <<"Please enter the teacher's name: "<<endl;
-        cout <<"Last name: ";
-        getline(cin,teacherLastName);
-        cout <<"Given name: ";
-        getline(cin,teacherGivenName);
-        cout <<"Middle Initial: ";
-        getline(cin,teacherMiddleInitial);
-        teacherFullNameA=teacherGivenName +" "+ teacherMiddleInitial +" "+ teacherLastName;
-        cout <<"The teacher's name is: "<<teacherFullNameA<<endl;
-        cout <<"Is this correct? Y/N: ";
-        cin >>yn;
-        inputval(yn);  
-    }while (yn=="n"||yn=="N");
 
-    //checking if teacher is registered in Teacher List.txt
-    teacherFullNameB=teacherLastName+", "+teacherGivenName+" "+teacherMiddleInitial;
-    teacherDetails="01-"+employeeNumber+" "+teacherFullNameB;
-    fstream checkTeacherList ("Teacher List.txt",ios::in);
-    teacherRegistered=false;
-    if (checkTeacherList.is_open())
-    {
-        string line;
-        while(getline(checkTeacherList,line))
-        {
-            if (line==teacherDetails)
-            {
-                teacherRegistered=true;
-            }
-        }
-        checkTeacherList.close();
-    }
 
-    //checking if teacher has subject listed in file
-    if (teacherRegistered)
-    {
-        subjectNotListed=false;
-        teacherLastGivenName=teacherLastName+"_"+teacherGivenName+".txt";
-        fstream checkTeacherFile(teacherLastGivenName,ios::in);
-        if (checkTeacherFile.is_open())
-        {
-            for (int i=1;i<5;i++)
-            {
-                string dummy;
-                getline(checkTeacherFile,dummy);
-            }
-            //starting at the fifth line
-            string checkSubjects;
-            if(getline(checkTeacherFile,checkSubjects))
-            {
-                // .find will return npos if subject is not found
-                if(checkSubjects.find(Subject)==string::npos)
-                {
-                    cout <<"\nSubject is not listed in teacher's information."<<endl;
-                    subjectNotListed=true;
-                    resetbutton=true;
-                }
-            }
-            checkTeacherFile.close();
-        }
-    }
-
-    //teacher is not registered
-    else
-    {
-        cout <<"\nTeacher not found in database! Please check your spelling or make sure that the teacher is registered."<<endl;
-        resetbutton=true;
-        return;
-    }  
-}
-
-//prompts user to enlist student
-void enlistStudent(bool&resetbutton, bool&studentRegistered,bool&studentEnlistedAlready,bool&conflictingSchedule,
-string Subject, string DaySlot, string TimeSlot,string&studentDetails,const int maxNumOfStudents,
-string studentClassList[5][100]) 
-{
-    string yn,studentLastName,studentGivenName,studentMiddleInitial,studentFullName,studentNumber;
-    do 
-    {
-        cout <<"\nPlease enter the student number."<<endl;
-        cout <<"Student Number: 23-";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        getline(cin,studentNumber);
-        cout <<"The student number is: 23-"<<studentNumber<<endl;
-        cout <<"Is this correct? Y/N: ";
-        cin >>yn;
-        inputval(yn);
-    }while(yn=="n"||yn=="N");
-
-    do 
-    {
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout <<"\nPlease enter the student's name: "<<endl;
-        cout <<"Last name: ";
-        getline(cin,studentLastName);
-        cout <<"Given name: ";
-        getline(cin,studentGivenName);
-        cout <<"Middle Initial: ";
-        getline(cin,studentMiddleInitial);
-        studentFullName=studentLastName+", "+studentGivenName+" "+studentMiddleInitial;
-        cout <<"The student's name is: "<<studentFullName<<endl;
-        cout <<"Is this correct? Y/N: ";
-        cin >>yn;
-        inputval(yn);
-    }while (yn=="n"||yn=="N");
-    
-    //checking if student is registered in Student List.txt
-    studentDetails="23-"+studentNumber+" "+studentFullName;
-    fstream checkStudentList ("Student List.txt",ios::in);
-    studentRegistered=false;
-    studentEnlistedAlready=false;
-    conflictingSchedule=false;
-    if (checkStudentList.is_open())
-    {
-        string line;
-        while(getline(checkStudentList,line))
-        {
-            if (line==studentDetails)
-            {
-                studentRegistered=true;
-            }
-        }
-        checkStudentList.close();
-    }
-
-    if (studentRegistered==true)
-    {
-        cout <<"Student found in database."<<endl;
-        //checking array if student is enlisted in subject with same or different section
-        for (int i=0; i<maxNumOfStudents; i++)
-        {
-            if (studentClassList[0][i]==studentDetails&&studentClassList[1][i]==Subject)
-            {
-                cout <<"\nStudent is already enlisted in this subject!";
-                studentEnlistedAlready=true;
-                break;                    
-            }
-        }
-        if (!studentEnlistedAlready)
-        {
-            //checking for conflicting schedule
-            for (int i=0; i<maxNumOfStudents; i++)
-            {
-                if (studentClassList[0][i]==studentDetails&&studentClassList[3][i]==DaySlot&&studentClassList[4][i]==TimeSlot)
-                {
-                    cout <<"\nConflicting schedule! Student is already in a class with the same day and time.";
-                    conflictingSchedule=true;
-                    break;                    
-                }
-            }  
-        }
-    }
-    if (studentRegistered==false)
-    {
-        cout <<"\nStudent not found in database! Please check your spelling or make sure that the student is registered."<<endl;
-    }
-}
 
 //prompts user to choose which class to view
 void ChooseClassView(int chosenClassView,string classNames[20],string classNameTXT[20],
@@ -1731,8 +1768,8 @@ const int maxNumOfClasses,int&enlistedClasses)
     string yn;
     do 
     {
-        cout <<"----------------------------------------------------------------"<<endl;
-        cout <<"Please enter the number of the class you wish to view: ";
+        cout <<"----------------------------------------------------------------"<<endl
+             <<"Please enter the number of the class you wish to view: ";
         cin >>chosenClassView;
         //makes sure user only enters valid number
         while(cin.fail()==true||cin.peek()!='\n'||(chosenClassView>enlistedClasses||chosenClassView<1))
@@ -1749,8 +1786,8 @@ const int maxNumOfClasses,int&enlistedClasses)
     }while (yn=="n"||yn=="N");
 
     //displaying class details
-    cout <<"\nHere are the details of the class: "<<endl;
-    cout <<"----------------------------------------------------------------"<<endl;
+    cout <<"\nHere are the details of the class: "<<endl
+         <<"----------------------------------------------------------------"<<endl;
     fstream viewClass (classNameTXT[chosenClassView-1],ios::in);
     if (viewClass.is_open())
     {
@@ -1819,8 +1856,8 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
     string yn;
     do 
     {
-        cout <<"----------------------------------------------------------------"<<endl;
-        cout <<"Please enter the number of the class you wish to delete: ";
+        cout <<"----------------------------------------------------------------"<<endl
+             <<"Please enter the number of the class you wish to delete: ";
         cin >>chosenClassDelete;
         //makes sure user enters valid number
         while(cin.fail()==true||cin.peek()!='\n'||(chosenClassDelete>enlistedClasses||chosenClassDelete<1))
@@ -1917,22 +1954,19 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
     return;
 }
 
-
-////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
 //PATH 1
 void creatingNewClass(bool&MainResetButton,
 string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
 const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
 {
     //declaring important variables
-    int chosenSubject,chosenDaySlot;
+    int chosenDaySlot;
     string Subject, Section, DaySlot, TimeSlot,teacherFullNameA,studentDetails;
     const int numberofsubjects=10;
     string subjects[numberofsubjects]={"Programming", "Drafting", "Data Analysis",
-                                   "Circuits 1", "OOP", "Circuits 2", 
-                                   "Electronics 1","Electronics 2", 
-                                   "Logic Circuits", "Microprocessors"};
+                                        "Circuits 1", "OOP", "Circuits 2", 
+                                        "Electronics 1","Electronics 2", 
+                                        "Logic Circuits", "Microprocessors"};
     const int numberofsections=2;
     string sections[numberofsections]={"A","B"};
     const int numberofdays=8;
@@ -1943,25 +1977,24 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
         {"8:00-11:00","11:00-2:00", "2:00-5:00"} //3 hour time slots
     };
     MainResetButton=false;
+    ClassContents newclass(Subject, Section, DaySlot, TimeSlot);
     //display and choose subject
-    displaySubjects(subjects,numberofsubjects);
-    ChooseSubject(chosenSubject,Subject,subjects);
+    newclass.displaySubjects(subjects,numberofsubjects);
+    newclass.ChooseSubject(Subject,subjects);
 
     //display and choose section
-    displaySections(chosenSubject,subjects,sections,numberofsections);
-    ChooseSection(MainResetButton,Section,Subject,sections);
-    if (MainResetButton) //if class is aleady enlisted
-    {
-        return; //back to main menu
-    }
+    newclass.displaySections(sections, numberofsections);
+    newclass.ChooseSection(MainResetButton, Section, sections);
+    if (MainResetButton) return;
+    // back to main menu if class is aleady enlisted
+
     //display and choose day slot
-    displayDays(chosenSubject,subjects,dayslots,numberofdays);
-    ChooseDay(chosenDaySlot,DaySlot,dayslots);
+    newclass.displayDays(dayslots, numberofdays);
+    newclass.ChooseDay(chosenDaySlot, DaySlot, dayslots);
 
     //display and choose time slot
-    displayTimeSlots(chosenDaySlot,chosenSubject,subjects,timeslots);
-    ChooseTime(chosenDaySlot,TimeSlot,timeslots);
-    ClassContents newclass(Subject,Section,DaySlot,TimeSlot);
+    newclass.displayTimeSlots(chosenDaySlot, timeslots);
+    newclass.ChooseTime(chosenDaySlot, TimeSlot, timeslots);
 
     //create new class file and display contents of file
     newclass.createNewClassFile(classNames,classNameTXT,maxNumOfClasses,enlistedClasses);
@@ -1976,23 +2009,28 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
         cout <<"\nWould you like to assign a teacher to the class? Y/N: ";
         cin>>yn;
         inputval(yn);
+        //no
         if (yn=="n"||yn=="N") //no teacher assigned
         {
             cout <<"\nClass details INCOMPLETE. Deleting file..."<<endl<<""<<endl;
             incompleteDetails(MainResetButton,classNameTXT,enlistedClasses); //delete file
             return;
         }
+        //yes
         else //assigning teacher
         {
-            bool teacherRegistered,subjectNotListed;
-            assigningTeacher(reset,teacherRegistered,subjectNotListed,Subject,teacherFullNameA); 
             //includes the process of checking if teacher is in database
+            bool teacherRegistered,subjectNotListed;
             TeacherClass tchr(Subject,Section,DaySlot,TimeSlot);
-            tchr.setTeacher(teacherFullNameA);
-            tchr.appendteacher(subjectNotListed,teacherRegistered,classNameTXT,enlistedClasses);
+            // gets user input for teacher details
+            tchr.assigningTeacher(reset,teacherRegistered,subjectNotListed,teacherFullNameA); 
+            tchr.setTeacher(teacherFullNameA); //updating private variables
+            //appending teacher to class. Using polymorphism
+            tchr.appendToClass(subjectNotListed,teacherRegistered,classNameTXT,enlistedClasses);
         }
     }while(reset==true);
-    displayClass(classNameTXT,enlistedClasses); //display updated version of class with teacher included
+    // display updated version of class with teacher included
+    displayClass(classNameTXT,enlistedClasses); 
 
     //adding students
     cout <<"\nWould you like to enlist a student to the class? Y/N: ";
@@ -2011,15 +2049,17 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
     bool enlistagain,studentRegistered,studentEnlistedAlready=false,conflictingSchedule=false;
     do
     {
+        //includes process of checking if student is in database 
         enlistagain=false;
         bool resetbutton=false;
-        //includes process of checking if student is in database 
-        enlistStudent(resetbutton,studentRegistered,studentEnlistedAlready,conflictingSchedule,
-        Subject,DaySlot,TimeSlot,studentDetails,maxNumOfStudents,studentClassList); 
         Student stdnt(Subject,Section,DaySlot,TimeSlot);
-        stdnt.setStudent(studentDetails);
-        stdnt.appendstudent(resetbutton,enlistagain,studentRegistered,studentEnlistedAlready,conflictingSchedule,
-        Subject,Section,classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses);
+        //gets user input for student details
+        stdnt.enlistStudent(resetbutton,studentRegistered,studentEnlistedAlready,conflictingSchedule,
+        studentDetails,maxNumOfStudents,studentClassList); 
+        stdnt.setStudent(studentDetails); //updating private variables
+        //appending student to class. Using polymorphism
+        stdnt.appendToClass(resetbutton,enlistagain,studentRegistered,studentEnlistedAlready,
+        conflictingSchedule,classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses);
         if (resetbutton==true) //if user is done enlisting students
         {
             MainResetButton=true;
@@ -2028,10 +2068,6 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
     }while (enlistagain==true); //if user is not done enlisting students
 }
 
-
-
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
 //PATH 2
 void viewDeleteClasses(bool&MainResetButton,
 string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
@@ -2058,44 +2094,14 @@ const int maxNumofClasses,const int maxNumOfStudents,int&enlistedClasses)
     switch(option)
     {
         case 1: //view details of a class
-            cout <<"\nHere is the list of enlisted classes: "<<endl;
-            cout <<"----------------------------------------------------------------"<<endl;
-            {
-                fstream displayClassList ("Class List.txt", ios::in);
-                if (displayClassList.is_open())
-                {
-                    int i=1;
-                    string line;
-                    while (getline(displayClassList,line))
-                    {
-                        cout <<i<<". "<<line<<endl; //displays contents of class list
-                        i++;
-                    } 
-                    displayClassList.close();
-                }
-            }
+            displayClassList();
             //prompt user to choose class to view
             ChooseClassView(chosenClassView,classNames,classNameTXT,maxNumofClasses,enlistedClasses); 
             MainResetButton=true; //back to main menu after displaying class details
             return;
 
         case 2: //delete a class
-            cout <<"\nHere is the list of enlisted classes: "<<endl;
-            cout <<"----------------------------------------------------------------"<<endl;
-            {
-                fstream displayClassList ("Class List.txt", ios::in);
-                if (displayClassList.is_open())
-                {
-                    int i=1;
-                    string line;
-                    while (getline(displayClassList,line))
-                    {
-                        cout <<i<<". "<<line<<endl; //displays contents of class list
-                        i++;
-                    } 
-                    displayClassList.close();
-                }
-            }
+            displayClassList();
             //prompt user to choose class to delete
             ChooseClassDelete(chosenClassDelete,classNames,classNameTXT,studentClassList,
             maxNumofClasses,maxNumOfStudents,enlistedClasses); 
