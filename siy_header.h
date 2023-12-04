@@ -1338,8 +1338,10 @@ class TeacherClass:public ClassContents //child class for teacher
                 return;
             }
         }
+
+        //POLYMORPHISM
         //appending teacher to class file
-        void appendteacher(bool subjectNotListed,bool teacherRegistered,string classNameTXT[20],int enlistedClasses)
+        void appendToClass(bool subjectNotListed,bool teacherRegistered,string classNameTXT[20],int enlistedClasses)
         {
             //teacher is registered
             if (!subjectNotListed&&teacherRegistered)
@@ -1455,8 +1457,9 @@ class Student:public ClassContents //child class for students
             }
         }
 
+        //POLYMORPHISM
         //appending students to class file
-        void appendstudent(bool&resetbutton,bool&enlistagain,bool studentRegistered,bool studentEnlistedAlready,
+        void appendToClass(bool&resetbutton,bool&enlistagain,bool studentRegistered,bool studentEnlistedAlready,
         bool conflictingSchedule,string(&classNames)[20],string(&classNameTXT)[20],string(&studentClassList)[5][100],
         const int maxNumOfClasses,int&enlistedClasses)
         {
@@ -2006,20 +2009,24 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
         cout <<"\nWould you like to assign a teacher to the class? Y/N: ";
         cin>>yn;
         inputval(yn);
+        //no
         if (yn=="n"||yn=="N") //no teacher assigned
         {
             cout <<"\nClass details INCOMPLETE. Deleting file..."<<endl<<""<<endl;
             incompleteDetails(MainResetButton,classNameTXT,enlistedClasses); //delete file
             return;
         }
+        //yes
         else //assigning teacher
         {
+            //includes the process of checking if teacher is in database
             bool teacherRegistered,subjectNotListed;
             TeacherClass tchr(Subject,Section,DaySlot,TimeSlot);
+            // gets user input for teacher details
             tchr.assigningTeacher(reset,teacherRegistered,subjectNotListed,teacherFullNameA); 
-            //includes the process of checking if teacher is in database
-            tchr.setTeacher(teacherFullNameA);
-            tchr.appendteacher(subjectNotListed,teacherRegistered,classNameTXT,enlistedClasses);
+            tchr.setTeacher(teacherFullNameA); //updating private variables
+            //appending teacher to class. Using polymorphism
+            tchr.appendToClass(subjectNotListed,teacherRegistered,classNameTXT,enlistedClasses);
         }
     }while(reset==true);
     // display updated version of class with teacher included
@@ -2042,15 +2049,17 @@ const int maxNumOfClasses,const int maxNumOfStudents,int&enlistedClasses)
     bool enlistagain,studentRegistered,studentEnlistedAlready=false,conflictingSchedule=false;
     do
     {
+        //includes process of checking if student is in database 
         enlistagain=false;
         bool resetbutton=false;
-        //includes process of checking if student is in database 
         Student stdnt(Subject,Section,DaySlot,TimeSlot);
+        //gets user input for student details
         stdnt.enlistStudent(resetbutton,studentRegistered,studentEnlistedAlready,conflictingSchedule,
         studentDetails,maxNumOfStudents,studentClassList); 
-        stdnt.setStudent(studentDetails);
-        stdnt.appendstudent(resetbutton,enlistagain,studentRegistered,studentEnlistedAlready,conflictingSchedule,
-        classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses);
+        stdnt.setStudent(studentDetails); //updating private variables
+        //appending student to class. Using polymorphism
+        stdnt.appendToClass(resetbutton,enlistagain,studentRegistered,studentEnlistedAlready,
+        conflictingSchedule,classNames,classNameTXT,studentClassList,maxNumOfClasses,enlistedClasses);
         if (resetbutton==true) //if user is done enlisting students
         {
             MainResetButton=true;
