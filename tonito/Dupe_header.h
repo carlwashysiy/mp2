@@ -26,11 +26,7 @@ class Student_info {
             number = n;
 
             filename = surname + "_" + given_name + ".txt";
-            
-            if (middle_initial == ""){
-                fullname = surname + ", " + given_name;
-            }
-            else fullname = surname + ", " + given_name + " " + middle_initial + '.'; 
+            fullname = surname + ", " + given_name + " " + middle_initial + '.'; 
         };
 
         void Create_File(){
@@ -329,14 +325,12 @@ void show_student(string filename)
 int delete_student(string last, string first, string middle, string number)
 {
     string file = last + "_" + first + ".txt";
-    string stringToRemove;
 
     if (middle == "1")
     {
-        string stringToRemove = number + "  " + last + ", " + first;
+        middle == "";
     }
-    else string stringToRemove = number + "  " + last + ", " + first + " " + middle + ".";
-
+    string stringToRemove = number + "  " + last + ", " + first + " " + middle + ".";
     string filename = "Student List.txt";
 
     ifstream input(filename);
