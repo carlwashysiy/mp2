@@ -48,19 +48,6 @@ public:
             cout << "Unable to open file.";
     };
 
-    void Student_List()
-    {
-        fstream compile;
-        compile.open("Student List.txt", ios::app);
-        if (compile.is_open())
-        {
-            compile << fullname << endl;
-            compile.close();
-        }
-        else
-            cout << "Unable to open file.";
-    };
-
     void Make_Student_Number()
     {
         ifstream myFile("Student List.txt");
@@ -76,23 +63,28 @@ public:
         }
         else
             cout << "Unable to open file.";
-        string lastLine = array[loop - 3];
-        string studentnumber;
-        istringstream iss(lastLine);
-        iss >> studentnumber;
-        string lastTwoDigits;
-        lastTwoDigits = studentnumber.substr(studentnumber.length() - 2);
-        int lastTwoDigitsAsInt = stoi(lastTwoDigits);
-        int newstudentnum = lastTwoDigitsAsInt + 1;
         string add_number;
-        if (newstudentnum < 10)
+        if (loop == 1 )
         {
-            add_number = "0" + to_string(newstudentnum);
+            add_number = "01";
         }
         else
-            add_number = to_string(newstudentnum);
-        
-        
+        {
+            string lastLine = array[loop - 3];
+            string studentnumber;
+            istringstream iss(lastLine);
+            iss >> studentnumber;
+            string lastTwoDigits;
+            lastTwoDigits = studentnumber.substr(studentnumber.length() - 2);
+            int lastTwoDigitsAsInt = stoi(lastTwoDigits);
+            int newstudentnum = lastTwoDigitsAsInt + 1;
+            if (newstudentnum < 10)
+            {
+                add_number = "0" + to_string(newstudentnum);
+            }
+            else
+                add_number = to_string(newstudentnum);
+        }
 
         student_number = "23-" + add_number;
 
@@ -341,7 +333,6 @@ int add_student()
     Student_info student(student_info[*pntr][0], student_info[*pntr][1], student_info[*pntr][2], student_info[*pntr][3], student_info[*pntr][4], student_info[*pntr][5], student_info[*pntr][6], student_info[*pntr][7], student_info[*pntr][8]);
 
     student.Create_File();
-    student.Student_List();
     student.Make_Student_Number();
     student.New_File();
 
@@ -374,7 +365,7 @@ int delete_student(string last, string first, string middle, string number)
     {
         middle = "";
     }
-    string stringToRemove = number + "  " + last + ", " + first + " " + middle + ".";
+    string stringToRemove = number + " " + last + ", " + first + " " + middle + ".";
     string filename = "Student List.txt";
 
     ifstream input(filename);
@@ -430,6 +421,7 @@ int delete_student(string last, string first, string middle, string number)
     else if (found == false)
     {
         cout << "Sorry, this student is not in our database.\n";
+        cout << "Please check your spelling or make sure the student is already registered.\n";
         remove("temp.txt");
     }
 
@@ -469,6 +461,27 @@ void block1(bool&MenuResetButton)
         show_student(file_name);
         break;
     case 4:
+        string line;
+        int studentCount = -1;
+        bool emptyStudentList = false;
+        fstream checkingStudent_List("Student List.txt", ios::in);
+        if (checkingStudent_List.is_open())
+        {
+            while (!checkingStudent_List.eof())
+            {
+                getline(checkingStudent_List, line);
+                studentCount++;
+            }
+            checkingStudent_List.close();
+        }
+        if (studentCount == 0)
+        {
+            cout << "No students registered yet!" << endl;
+            emptyStudentList = true;
+            break;
+        }
+
+        //student list not empty
         cout << "Type the last name of the student you want to delete" << endl;
         getline(cin, last_name);
 
@@ -546,26 +559,33 @@ public:
         }
         else
             cout << "Unable to open file.";
-        string lastLine = array[loop - 3];
-        string employeenumber;
-        istringstream iss(lastLine);
-        iss >> employeenumber;
-        string lastThreeDigits;
-        lastThreeDigits = employeenumber.substr(employeenumber.length() - 3);
-        int lastTwoDigitsAsInt = stoi(lastThreeDigits);
-        int EmployeeNum = lastTwoDigitsAsInt + 1;
         string add_number;
-        if (EmployeeNum < 100)
+        if (loop == 1)
         {
-            if(EmployeeNum<10)
+            add_number = "001";
+        }
+        else 
+        {
+            string lastLine = array[loop - 2];
+            string employeenumber;
+            istringstream iss(lastLine);
+            iss >> employeenumber;
+            string lastThreeDigits;
+            lastThreeDigits = employeenumber.substr(employeenumber.length() - 3);
+            int lastThreeDigitsAsInt = stoi(lastThreeDigits);
+            int EmployeeNum = lastThreeDigitsAsInt + 1;
+            if (EmployeeNum < 100)
             {
-                add_number = "00" + to_string(EmployeeNum);
+                if(EmployeeNum<10)
+                {
+                    add_number = "00" + to_string(EmployeeNum);
+                }
+                else
+                    add_number = "0" + to_string(EmployeeNum);
             }
             else
-                add_number = "0" + to_string(EmployeeNum);
+                add_number = to_string(EmployeeNum);
         }
-        else
-            add_number = to_string(EmployeeNum);
 
         EmployeeNumber = "01-" + add_number;
     }
@@ -646,24 +666,38 @@ public:
         cout << "\n!!please enter the number of the subject one by one!!" << endl
              << "!!enter [0] after subject selection!!" << endl;
         int i = 0;
-        while (choice != 0)
+        while (choice != 0 && i < 10)
         {
             cout << "\n\nEnter number of choice: ";
             inputVal(choice, 10, 0, " Enter number between [0-10] only: ");
             string SubjChoice;
-            cout << "You have chosen: ";
+            bool subjectRepeated=false;
             int j = choice - 1;
-            cout << SubjectChoice[j - 1][2];
-            SubjChoice = SubjectChoice[j][1];
+            for (int z = 0; z < i + 1; z++)
+            {
+                if (SubjectChoice[j][1]==SubjectList[z])
+                {
+                    cout << "You can only pick a subject once!";
+                    subjectRepeated = true;
+                    break;
+                }
+            }
+            if (subjectRepeated==false)
+            {
+                cout << "You have chosen: ";
+                cout << SubjectChoice[j - 1][2];
+                SubjChoice = SubjectChoice[j][1];
 
-            SubjectList[i] = SubjChoice;
-            i++;
+                SubjectList[i] = SubjChoice;
+                i++;
+            }
         }
 
-        cout << "[0] End Subject Selection\n\n"
+        cout << "\n[0] End Subject Selection\n\n"
              << "You have input [0] and thus have excited subject selection. " << endl;
 
-        for (int j = 0; j < i - 1; j++)
+        Subject = SubjectList[0];
+        for (int j = 1; j < i; j++)
         {
             Subject = Subject + ", " + SubjectList[j];
         }
@@ -708,7 +742,7 @@ public:
              << "Input Contact Number (09XXXXXXXXX): ";
         getline(cin, ContactNumber);
         bool bad_data=false;
-        if (ContactNumber.substr(0, 2) != "09")
+        if (ContactNumber.substr(0, 2) != "09" || ContactNumber.length() != 11)
         {
             bad_data = true;
         }
@@ -822,6 +856,27 @@ public:
     }
     void DeleteTeacher()
     {
+        string line;
+        int teacherCount = -1;
+        bool emptyTeacherList = false;
+        fstream checkingTeacherList("Teacher List.txt", ios::in);
+        if (checkingTeacherList.is_open())
+        {
+            while (!checkingTeacherList.eof())
+            {
+                getline(checkingTeacherList, line);
+                teacherCount++;
+            }
+            checkingTeacherList.close();
+        }
+        if (teacherCount==0)
+        {
+            cout << "No teachers registered yet!" << endl;
+            emptyTeacherList = true;
+            return;
+        }
+
+        //teacher list not empty
         cout << "Doing #3 process - Delete Teacher File\n\n\n";
         cout << "[3] Delete Teacher File\n"
              << endl;
@@ -836,99 +891,130 @@ public:
         getline(cin, MiddleInitial);
         FullName = LastName + ", " + FirstName + " " + MiddleInitial;
         Name = FullName;
-        FileName = LastName + "_" + FirstName + ".txt";
-        fstream IndivFile;
-        IndivFile.open(FileName);
+        string FindTeacherName = LastName + ", " + FirstName;
+        fstream findingTeacherName("Teacher List.txt", ios::in);
+        bool teacherFound = false;
+        if (findingTeacherName.is_open())
         {
-            if (IndivFile.is_open())
+            string line;
+            while (getline(findingTeacherName,line))
             {
-                IndivFile.close();
-                cout << "Individual File on " << FileName << endl
-                     << endl;
-                ViewFile(FileName);
-                MoveOnConfirm();
-            }
-            else
-            {
-                cout << "Individual File on [" << FileName << "] Not Found!" << endl
-                     << endl;
-                MoveOnConfirm();
-            }
-        }
-        cout << "\nAre you sure you want to delete " << FileName << "'s file [y/n]?: ";
-        string confirm;
-        cin >> confirm;
-        while (confirm != "y" && confirm != "n" && confirm != "Y" && confirm != "N")
-        {
-            cin.clear();
-            cin.ignore(1000, '\n');
-            cout << "!!Bad data!!";
-            cout << "Enter [y/n] only: ";
-            cin >> confirm;
-        }
-        if (confirm == "y" || confirm == "Y")
-        {
-
-            cout << "Doing #3 process - Delete Teacher File\n\n\n";
-            // delete indiv file
-            remove(FileName.c_str());
-            fstream Indiv;
-            Indiv.open(FileName.c_str());
-            if (Indiv.is_open())
-            {
-                cout << "!! Error !! Personal File Failed to Delete..." << endl;
-                cout << "Back to main menu..." << endl
-                     << endl;
-                MoveOnConfirm();
-                return;
-                Indiv.close();
-            }
-            else
-            {
-                cout << "Personal File Succesfully Deleted..." << endl
-                     << endl;
-            }
-            // delete line from teacher file
-            string TeacherName = LastName + ", " + FirstName;
-            fstream temp;
-            fstream Teach;
-            temp.open("TempTeacherList.txt", ios ::out);
-            Teach.open("Teacher List.txt", ios::in);
-            if (temp.is_open() || Teach.is_open())
-            {
-                string line;
-                while (getline(Teach, line))
+                if(line.find(FindTeacherName)!=string::npos)
                 {
-                    if (line.find(TeacherName) == string::npos)
-                    {
-                        temp << line << "\n";
-                    }
+                    cout << "Teacher found." << endl;
+                    teacherFound = true;
+                    break;
                 }
-
-                temp.close();
-                Teach.close();
-
-                remove("Teacher List.txt");
-                rename("TempTeacherList.txt", "Teacher List.txt");
-                cout << "\nTeacher deleted successfully in All teacher file...\n\n";
-                MoveOnConfirm();
-                return;
             }
-            else
+            findingTeacherName.close();
+        }
+        if (teacherFound==true)
+        {
+            FileName = LastName + "_" + FirstName + ".txt";
+            fstream IndivFile;
+            bool fileFound = true;
+            IndivFile.open(FileName);
             {
-                cout << "!! Error unable to open files !!" << endl;
-                cout << "\n[File Not Found] \nBack to main menu...\n"
-                     << endl;
-                MoveOnConfirm();
-                return;
+                if (IndivFile.is_open())
+                {
+                    IndivFile.close();
+                    cout << "Individual File on " << FileName << endl
+                         << endl;
+                    ViewFile(FileName);
+                    MoveOnConfirm();
+                }
+                else
+                {
+                    cout << "Individual File on [" << FileName << "] Not Found!" << endl
+                         << endl;
+                    fileFound = false;
+                    MoveOnConfirm();
+                }
             }
-            return;
+            if (fileFound == true)
+            {
+                cout << "\nAre you sure you want to delete " << FileName << "'s file [y/n]?: ";
+                string confirm;
+                cin >> confirm;
+                while (confirm != "y" && confirm != "n" && confirm != "Y" && confirm != "N")
+                {
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "!!Bad data!!";
+                    cout << "Enter [y/n] only: ";
+                    cin >> confirm;
+                }
+                if (confirm == "y" || confirm == "Y")
+                {
+
+                    cout << "Doing #3 process - Delete Teacher File\n\n\n";
+                    // delete indiv file
+                    remove(FileName.c_str());
+                    fstream Indiv;
+                    Indiv.open(FileName.c_str());
+                    if (Indiv.is_open())
+                    {
+                        cout << "!! Error !! Personal File Failed to Delete..." << endl;
+                        cout << "Back to main menu..." << endl
+                             << endl;
+                        MoveOnConfirm();
+                        return;
+                        Indiv.close();
+                    }
+                    else
+                    {
+                        cout << "Personal File Succesfully Deleted..." << endl
+                             << endl;
+                    }
+                    // delete line from teacher file
+                    string TeacherName = LastName + ", " + FirstName;
+                    fstream temp;
+                    fstream Teach;
+                    temp.open("TempTeacherList.txt", ios ::out);
+                    Teach.open("Teacher List.txt", ios::in);
+                    if (temp.is_open() || Teach.is_open())
+                    {
+                        string line;
+                        while (getline(Teach, line))
+                        {
+                            if (line.find(TeacherName) == string::npos)
+                            {
+                                temp << line << "\n";
+                            }
+                        }
+
+                        temp.close();
+                        Teach.close();
+
+                        remove("Teacher List.txt");
+                        rename("TempTeacherList.txt", "Teacher List.txt");
+                        cout << "\nTeacher deleted successfully in All teacher file...\n\n";
+                        MoveOnConfirm();
+                        return;
+                    }
+                    else
+                    {
+                        cout << "!! Error unable to open files !!" << endl;
+                        cout << "\n[File Not Found] \nBack to main menu...\n"
+                             << endl;
+                        MoveOnConfirm();
+                        return;
+                    }
+                    return;
+                }
+                else
+                {
+                    cout << "\nDeletion Terminated... \n\nBack to main menu...\n"
+                         << endl;
+                    MoveOnConfirm();
+                    return;
+                }
+            }
         }
         else
         {
-            cout << "\nDeletion Terminated... \n\nBack to main menu...\n"
-                 << endl;
-            MoveOnConfirm();
+            cout << "\nTeacher does not exist!" << endl
+                 << "Please check your spelling or make sure the teacher is already registered" << endl;
             return;
         }
     }
@@ -938,7 +1024,7 @@ private:
 };
 void AskChoice(int &choice)
 {
-    cout << "Welcome to [School]'s Teacher Database..." << endl
+    cout << "\nWelcome to [School]'s Teacher Database..." << endl
          << "What would you like to do?" << endl
          << endl
          << "[1] Input a teacher" << endl

@@ -1,5 +1,5 @@
 #include <iostream>
-#include "siy_header.h"
+#include "Group6_mp2.h"
 using namespace std;
 
 int main()
