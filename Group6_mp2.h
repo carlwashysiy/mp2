@@ -50,6 +50,13 @@ public:
 
     void Make_Student_Number()
     {
+        fstream initial("Student List.txt", ios::app);
+        if (initial.is_open())
+        {
+            initial << "";
+            initial.close();
+        }
+
         ifstream myFile("Student List.txt");
         if (myFile.is_open())
         {
@@ -538,12 +545,19 @@ public:
         getline(cin, FirstName);
         cout << "Input Middle Initial (press [enter] if none): ";
         getline(cin, MiddleInitial);
-        FullName = LastName + ", " + FirstName + " " + MiddleInitial;
+        FullName = LastName + ", " + FirstName + " " + MiddleInitial + ".";
         Name = FullName;
         FileName = LastName + "_" + FirstName + ".txt";
     }
     void AssignNum()
     {
+        fstream initial("Teacher List.txt", ios::app);
+        if (initial.is_open())
+        {
+            initial << "";
+            initial.close();
+        }
+
         string line,array[100];
         int loop = 0;
         ifstream myFile("Teacher List.txt");
@@ -1177,6 +1191,12 @@ class ClassContents //parent class
             section = Section;
             // exits once user enters "Y"
 
+            fstream initial("Class List.txt", ios::app);
+            if (initial.is_open())
+            {
+                initial << "";
+                initial.close();
+            }
             // checking if class is enlisted already
             fstream checkClassList("Class List.txt", ios::in);
             bool classEnlistedAlready = false;
