@@ -30,13 +30,7 @@ public:
         number = n;
 
         filename = surname + "_" + given_name + ".txt";
-
-        if (middle_initial == "")
-        {
-            fullname = surname + ", " + given_name;
-        }
-        else
-            fullname = surname + ", " + given_name + " " + middle_initial + '.';
+        fullname = surname + ", " + given_name + " " + middle_initial + '.';
     };
 
     void Create_File()
@@ -82,20 +76,25 @@ public:
         }
         else
             cout << "Unable to open file.";
-
+        string lastLine = array[loop - 3];
+        string studentnumber;
+        istringstream iss(lastLine);
+        iss >> studentnumber;
+        string lastTwoDigits;
+        lastTwoDigits = studentnumber.substr(studentnumber.length() - 2);
+        int lastTwoDigitsAsInt = stoi(lastTwoDigits);
+        int newstudentnum = lastTwoDigitsAsInt + 1;
         string add_number;
-
-        if (loop - 1 < 10)
+        if (newstudentnum < 10)
         {
-            add_number = "0" + to_string(loop - 1);
+            add_number = "0" + to_string(newstudentnum);
         }
-
         else
-        {
-            add_number = to_string(loop - 1);
-        }
+            add_number = to_string(newstudentnum);
+        
+        
 
-        student_number = "23-" + add_number + " ";
+        student_number = "23-" + add_number;
 
         fstream add_student_number;
         add_student_number.open(filename, ios::app);
@@ -120,10 +119,10 @@ public:
                 {
                     newfile << array[i] << endl;
                 }
-                newfile << student_number << "" << fullname << endl;
+                newfile << student_number << " " << fullname << endl;
             }
             else
-                newfile << student_number << "" << fullname << endl;
+                newfile << student_number << " " << fullname << endl;
             newfile.close();
         }
         else
@@ -195,7 +194,7 @@ bool input_validation(string data)
     bool valid = false;
     for (int i = 0; i < data.length(); i++)
     {
-        if (isalpha(data[i]))
+        if (isalpha(data[i])||data[i]=='1')
         {
             valid = true;
         }
@@ -272,7 +271,7 @@ int add_student()
     {
         cout << "Street Name (If you don't have one, type 1): ";
         getline(cin, student_info[*pntr][4]);
-    } while (input_validation(student_info[*pntr][4]) == false || student_info[*pntr][4] == "1");
+    } while (input_validation(student_info[*pntr][4]) == false);
 
     if (student_info[*pntr][4] == "1")
     {
@@ -283,7 +282,7 @@ int add_student()
     {
         cout << "Subdivision/Building Name (If you don't have one, type 1): ";
         getline(cin, student_info[*pntr][5]);
-    } while (input_validation(student_info[*pntr][5]) == false || student_info[*pntr][5] == "1");
+    } while (input_validation(student_info[*pntr][5]) == false);
 
     if (student_info[*pntr][5] == "1")
     {
@@ -370,15 +369,12 @@ void show_student(string filename)
 int delete_student(string last, string first, string middle, string number)
 {
     string file = last + "_" + first + ".txt";
-    string stringToRemove;
 
     if (middle == "1")
     {
-        string stringToRemove = number + "  " + last + ", " + first;
+        middle = "";
     }
-    else
-        string stringToRemove = number + "  " + last + ", " + first + " " + middle + ".";
-
+    string stringToRemove = number + "  " + last + ", " + first + " " + middle + ".";
     string filename = "Student List.txt";
 
     ifstream input(filename);
@@ -406,7 +402,7 @@ int delete_student(string last, string first, string middle, string number)
             found = true;
         }
     }
-//Student List.txt
+
     input.close();
     temp.close();
 
@@ -433,7 +429,7 @@ int delete_student(string last, string first, string middle, string number)
     // Checks if the student is in the database
     else if (found == false)
     {
-        cout << "Sorry, this student is not in our database.\n\n";
+        cout << "Sorry, this student is not in our database.\n";
         remove("temp.txt");
     }
 
@@ -511,7 +507,7 @@ void MoveOnConfirm()
 class Parent
 {
 public:
-    Parent(string N, string A, int CN, string EN)
+    Parent(string N, string A, string CN, string EN)
     {
         Name = N;
         Address = A;
@@ -535,29 +531,49 @@ public:
     }
     void AssignNum()
     {
-        int EmployeeNum = 1;
-        EmployeeNumber = "01-00" + to_string(EmployeeNum);
-        fstream Teach;
-        string line;
-        Teach.open("Teacher List.txt", ios::in);
-        if (Teach.is_open())
+        string line,array[100];
+        int loop = 0;
+        ifstream myFile("Teacher List.txt");
+        if (myFile.is_open())
         {
-            while (getline(Teach, line))
+            while (!myFile.eof())
             {
-                while (line.find(EmployeeNumber) != string::npos)
-                {
-                    EmployeeNum++;
-                    EmployeeNumber = "01-00" + to_string(EmployeeNum);
-                }
+                getline(myFile, line);
+                array[loop] = line;
+                loop++;
             }
-            Teach.close();
+            myFile.close();
         }
+        else
+            cout << "Unable to open file.";
+        string lastLine = array[loop - 3];
+        string employeenumber;
+        istringstream iss(lastLine);
+        iss >> employeenumber;
+        string lastThreeDigits;
+        lastThreeDigits = employeenumber.substr(employeenumber.length() - 3);
+        int lastTwoDigitsAsInt = stoi(lastThreeDigits);
+        int EmployeeNum = lastTwoDigitsAsInt + 1;
+        string add_number;
+        if (EmployeeNum < 100)
+        {
+            if(EmployeeNum<10)
+            {
+                add_number = "00" + to_string(EmployeeNum);
+            }
+            else
+                add_number = "0" + to_string(EmployeeNum);
+        }
+        else
+            add_number = to_string(EmployeeNum);
+
+        EmployeeNumber = "01-" + add_number;
     }
-    void PrintInfo()
-    {
-        cout << Name << endl
-             << Address << endl
-             << ContactNumber;
+        void PrintInfo()
+        {
+            cout << Name << endl
+                 << Address << endl
+                 << ContactNumber;
     }
     void ViewFile(string FileName)
     {
@@ -586,7 +602,7 @@ public:
 protected:
     string Name;
     string Address;
-    int ContactNumber;
+    string ContactNumber;
     string EmployeeNumber;
     string FileName;
     bool FileExist;
@@ -595,7 +611,7 @@ protected:
 class Teacher : public Parent
 {
 public:
-    Teacher(string N, string A, int CN, string EN, string S) : Parent(N, A, CN, EN)
+    Teacher(string N, string A, string CN, string EN, string S) : Parent(N, A, CN, EN)
     {
         Name = N;
         Address = A;
@@ -689,15 +705,26 @@ public:
         Address = HouseNum + " " + Street + " " + SubdBldg + " " + Brgy + " " + City;
         // Contact Number
         cout << "[Teacher's Mobile Number:]" << endl
-             << "Input Contact Number: ";
-        while (!(cin >> ContactNumber))
+             << "Input Contact Number (09XXXXXXXXX): ";
+        getline(cin, ContactNumber);
+        bool bad_data=false;
+        if (ContactNumber.substr(0, 2) != "09")
         {
-            cin.clear();
-            cin.ignore(1000, '\n');
-            cout << "!!Bad data!!";
-            cout << " Enter number only" << endl;
-            cout << "Input Mobile Number: ";
+            bad_data = true;
         }
+            while (bad_data==true)
+            {
+                cout << "!!Bad data!!";
+                cout << " Enter number only" << endl;
+                cout << "Input Mobile Number (09XXXXXXXXX): ";
+                getline(cin, ContactNumber);
+                if (ContactNumber.substr(0, 2) != "09"||ContactNumber.length()!=11)
+                {
+                    bad_data = true;
+                }
+                else
+                    bad_data = false;
+            }
         // Subject
         GetSubject();
         // Assign Number
@@ -926,8 +953,7 @@ void AskChoice(int &choice)
 void TeacherMenu(bool&MenuResetButton)
 {
     int choice = 0;
-    string N, A, S, EN;
-    int CN;
+    string N, A, S, EN, CN;
     Teacher A1(N, A, CN, EN, S);
     while (choice != 4)
     {

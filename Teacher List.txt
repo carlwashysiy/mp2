@@ -4,8 +4,6 @@
 01-006 Henry, John
 01-007 Vasquez, Primera
 01-008 Hello, World
-01-009 Washington, George
-01-010 Messi, Lionel
 01-012 Aguas, Ray
 01-013 James, Lebron
 01-014 Yap, James
